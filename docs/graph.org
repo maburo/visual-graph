@@ -1,0 +1,3 @@
+[[https://www.hindawi.com/journals/mpe/2018/6208509/][A Force-Directed Algorithm for Drawing Directed Graphs Symmetrically]]
+[[https://en.wikipedia.org/wiki/Force-directed_graph_drawing][Force-directed graph drawing]]
+[[https://en.wikipedia.org/wiki/Graph_drawing][Graph drawing]]
