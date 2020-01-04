@@ -1,15 +1,29 @@
 import { Camera } from "./camera";
-import { BBox, Render } from "./render";
-import { Node } from "./components/node";
+import { BBox, Render, Point2D } from "./render";
+import Node from "./node";
+import Graph from "./graph";
+
+interface Layer {
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+}
+
+function createLayer(): Layer {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  return { canvas, ctx };
+}
 
 export default class MiniMapRender extends Render {
   width:number;
   height:number;
   bbox:BBox;
   private size:number;
-  private ctx:CanvasRenderingContext2D;
+  private mapLayer: Layer;
+  private camLayer: Layer;
   private scale:number;
   private root:HTMLElement;
+  private offset:Point2D = new Point2D();
 
   constructor(root:HTMLElement, camera:Camera, size:number) {
     super(camera);
@@ -22,47 +36,70 @@ export default class MiniMapRender extends Render {
     this.width = width * this.size;
     this.height = height * this.size;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = this.width;
-    canvas.height = this.height;
-    this.ctx = canvas.getContext('2d');    
-    this.root.appendChild(canvas);
+    this.mapLayer = createLayer();
+    this.camLayer = createLayer();
 
-    this.render();
+    this.onResize(this.width, this.height);
+
+    this.root.appendChild(this.mapLayer.canvas);
+    this.root.appendChild(this.camLayer.canvas);
   }
 
   get domElement() {
     return this.root;
   }
 
-  onResize(x:number, y:number) {
-    this.width = x;
-    this.height = y;
-  }
-  
-  createNode(el:any):Node {
-    const x = el.diagramX * this.scale;
-    const y = el.diagramY * this.scale;
-    
-    this.ctx.fillRect(x, y, 3, 3);
-    return null;
+  onResize(x:number, y:number) {    
+    this.mapLayer.canvas.width = this.width;
+    this.mapLayer.canvas.height = this.height;
+    this.camLayer.canvas.width = this.width;
+    this.camLayer.canvas.height = this.height;
+    // this.width = x;
+    // this.height = y;
   }
 
   render() {
+    const ctx = this.camLayer.ctx;
+    const pos = this.camera.postion;
+
+
+    // const pos = this.camera.postion.mul(this.scale).add(this.offset);
+    
+    let s = new Point2D(this.camera.viewport.width, this.camera.viewport.height);
+    
+    s = s.div(2).mul(this.scale)
+  
+    ctx.clearRect(0, 0, this.width, this.height);
+    ctx.strokeStyle = "blue"
+    ctx.beginPath()
+    ctx.moveTo(pos.x - 100, pos.y)
+    ctx.lineTo(pos.x + 100, pos.y)
+    ctx.moveTo(pos.x, pos.y - 100)
+    ctx.lineTo(pos.x, pos.y + 100)
+    ctx.stroke()
+    // ctx.strokeRect(pos.x - s.x, pos.y - s.y, s.x, s.y);
   }
 
-  create(bbox:BBox, nodes:Node[]) {
-    const scale = Math.min(this.height / bbox.height, this.width / bbox.width);
-    const offsetX = (this.width - bbox.width * scale) / 2;
-    const offsetY = (this.height - bbox.height * scale) / 2;
+  create(graph:Graph) {
+    const scale = Math.min(this.height / graph.bbox.height, this.width / graph.bbox.width);
+    const center = new Point2D(this.width / 2, this.height / 2);
+    const offset = center.sub(graph.bbox.center.mul(scale));
 
-    this.ctx.fillStyle = 'black';
+    this.scale = scale;
+    this.offset = offset;
+    
+    this.mapLayer.ctx.fillStyle = 'black';
 
-    nodes.forEach((n) => {
-      const x = n.x * scale + offsetX;
-      const y = n.y * scale + offsetY;
-      this.ctx.fillRect(x, y, 1, 1);
-    });
+    this.mapLayer.ctx.fillRect(center.x-2, center.y-2, 2, 2)
+
+    // graph.nodeList.forEach((n:Node) => {
+    //   this.drawNode(n, scale, offset);
+    // });
   }
 
+  drawNode(node:Node, scale:number, offset:Point2D) {
+    const x = node.x * scale + offset.x;
+    const y = node.y * scale + offset.y;
+    this.mapLayer.ctx.fillRect(x, y, 1, 1);
+  }
 }

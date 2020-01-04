@@ -5,7 +5,7 @@ import Grap from './graph';
 import App from './components/App';
 import Graph from './graph';
 import SvgRender from './svgRenderer';
-import MiniMapRender from './miniMapRender';
+import { Point2D } from './render';
 
 declare global {
   interface Window { setLod: (lvl:number) => void; }
@@ -45,7 +45,7 @@ graphElement.addEventListener('mouseup', (e) => { mousedown = false; })
 graphElement.addEventListener('mousemove', (e) => {
   if (mousedown) {
     e.preventDefault();
-    camera.move((mouseX - e.x) * 4, (mouseY - e.y) * 4);
+    camera.move((mouseX - e.x) * 2, (mouseY - e.y) * 2);
   }
   mouseX = e.x;
   mouseY = e.y;
@@ -60,8 +60,17 @@ document.addEventListener('keypress', (e) => {
     case '=':
       camera.zoom(camera.zoomLevel - 300);
       break;
-  }
-  
+  }  
+});
+
+window.addEventListener('resize', (e) => {  
+  graph.size = new Point2D(window.innerWidth, window.innerHeight);
+});
+
+graph.size = new Point2D(window.innerWidth, window.innerHeight);
+
+graphElement.addEventListener('touchmove', (e) => {
+  console.log(e);  
 });
 
 fetch('/big_graph.json')

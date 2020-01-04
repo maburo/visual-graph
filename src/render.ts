@@ -1,5 +1,5 @@
-import Node from './node';
 import { Camera } from "./camera";
+import Graph from './graph';
 
 export function clamp(value:number, min:number, max:number) {
   if (value > max) return max;
@@ -7,13 +7,67 @@ export function clamp(value:number, min:number, max:number) {
   return value;
 }
 
-export class Point {
+export class Matrix3D {
+  static mul(a:Array<number>, b:Array<number>):Array<number> {
+    return [
+      a[0] * b[0] + a[1] * b[3] + a[2] * b[6],
+      a[0] * b[1] + a[1] * b[4] + a[2] * b[7],
+      a[0] * b[2] + a[1] * b[5] + a[2] * b[8],
+
+      a[3] * b[0] + a[4] * b[3] + a[5] * b[6],
+      a[3] * b[1] + a[4] * b[4] + a[5] * b[7],
+      a[3] * b[2] + a[4] * b[5] + a[5] * b[8],
+
+      a[6] * b[0] + a[7] * b[3] + a[8] * b[6],
+      a[6] * b[1] + a[7] * b[4] + a[8] * b[7],
+      a[6] * b[2] + a[7] * b[5] + a[8] * b[8]
+    ];
+  }
+
+  static translationMtx(x:number, y:number):Array<number> {
+    return [
+      1, 0, x,
+      0, 1, y,
+      0, 0, 1
+    ]
+  }
+}
+
+export class Point3D {
+  readonly x:number;
+  readonly y:number;
+  readonly z:number;
+
+  constructor(x:number = 0, y:number = 0, z:number = 0) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+}
+
+export class Point2D {
   x: number;
   y: number;
 
-  constructor(x:number, y:number) {
+  constructor(x:number = 0, y:number = 0) {
     this.x = x;
     this.y = y;
+  }
+
+  add(p:Point2D):Point2D {
+    return new Point2D(this.x + p.x, this.y + p.y);
+  }
+
+  sub(p:Point2D):Point2D {
+    return new Point2D(this.x - p.x, this.y - p.y);
+  }
+
+  div(num:number) {
+    return new Point2D(this.x / num, this.y / num);
+  }
+
+  mul(num:number) {
+    return new Point2D(this.x * num, this.y * num);
   }
 }
 
@@ -21,8 +75,8 @@ export class Point {
  * BBox
  */
 export class BBox {
-  min = new Point(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
-  max = new Point(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
+  min = new Point2D(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+  max = new Point2D(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER);
 
   addPoint(x:number, y:number) {
     if (this.max.x < x) this.max.x = x;
@@ -38,6 +92,11 @@ export class BBox {
   get height() {
     return Math.abs(this.max.y - this.min.y);
   }
+
+  get center():Point2D {
+    return new Point2D(this.min.x + this.width / 2,
+                       this.min.y + this.height / 2);
+  }
 }
 
 /**
@@ -52,7 +111,7 @@ export abstract class Render {
 
   abstract render():void;
   abstract onResize(width:number, height:number):void;
-  abstract createNode(el:any):Node;
+  abstract create(graph:Graph):void;
   abstract init(width:number, height:number):void;
   abstract get domElement():HTMLElement;
 }

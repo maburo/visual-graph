@@ -1,4 +1,4 @@
-import { clamp, BBox, Point } from "./render";
+import { clamp, BBox, Point2D, Point3D } from "./render";
 
 export class Viewport {
   top:number = 0;
@@ -22,35 +22,64 @@ export class Camera {
   private x:number = 0;
   private y:number = 0;
   private z:number = 1;
-  maxZoom = 7;
-  minZoom = 0.3;
+  maxZoom = 40
+  minZoom = 0.05;
   zoomSense:number = 0.001;
   isDirty = true;
   readonly viewport:Viewport;
   bbox:BBox;
+  size:Point2D = new Point2D();
 
   constructor(viewport?:Viewport) {
     this.viewport = viewport;
   }
 
   move(x: number, y:number) {
-    this.x = clamp(this.x + x * this.z, this.bbox.min.x, this.bbox.max.x);
-    this.y = clamp(this.y + y * this.z, this.bbox.min.y, this.bbox.max.y);
+    if (this.bbox) {
+      this.x = clamp(this.x + x * (1 / this.z), this.bbox.min.x, this.bbox.max.x);
+      this.y = clamp(this.y + y * (1 / this.z), this.bbox.min.y, this.bbox.max.y);
+    } else {
+      this.x += x * this.z;
+      this.y += y * this.z;
+    }
+
     this.isDirty = true;
   }
 
-  zoom(value:number, center?:Point) {
+  zoom(value:number, center?:Point2D) {
+    console.log(this.z);
+    
     this.z = clamp(this.z + value * this.zoomSense, this.minZoom, this.maxZoom);
     this.isDirty = true;
   }
 
-  setPosition(x:number, y:number) {
-    this.isDirty = true;
+  get translationMtx() {
+    return [
+      1, 0, -this.x,
+      0, 1, -this.y,
+      0, 0, 1
+    ];
   }
 
-  setZoom(value:number, center?:Point) {
-    this.isDirty = true;
+  get scaleMtx() {
+    return [
+      this.z, 0, 0,
+      0, this.z, 0,
+      0, 0, 1
+    ];
   }
+
+  get postion():Point3D {
+    return new Point3D(this.x, this.y, this.z);
+  }
+
+  // setPosition(x:number, y:number) {
+  //   this.isDirty = true;
+  // }
+
+  // setZoom(value:number, center?:Point) {
+  //   this.isDirty = true;
+  // }
   
   get zoomLevel() {
     return this.z;
@@ -58,8 +87,8 @@ export class Camera {
 
   update():boolean {
     if (this.isDirty) {
-      const width = 2000 * this.z;
-      const height = 2000 * this.z;
+      const width = this.size.x * this.z;
+      const height = this.size.y * this.z;
       
       this.viewport.top = this.x - width / 2;
       this.viewport.left = this.y - height / 2;
