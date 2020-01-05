@@ -60,24 +60,22 @@ export default class MiniMapRender extends Render {
 
   render() {
     const ctx = this.camLayer.ctx;
-    const pos = this.camera.postion;
-
-
-    // const pos = this.camera.postion.mul(this.scale).add(this.offset);
+    const pos = new Point2D(this.camera.postion.x, this.camera.postion.y)
+    .mul(this.scale)
+    .add(this.offset)
     
-    let s = new Point2D(this.camera.viewport.width, this.camera.viewport.height);
-    
-    s = s.div(2).mul(this.scale)
-  
     ctx.clearRect(0, 0, this.width, this.height);
-    ctx.strokeStyle = "blue"
-    ctx.beginPath()
-    ctx.moveTo(pos.x - 100, pos.y)
-    ctx.lineTo(pos.x + 100, pos.y)
-    ctx.moveTo(pos.x, pos.y - 100)
-    ctx.lineTo(pos.x, pos.y + 100)
-    ctx.stroke()
-    // ctx.strokeRect(pos.x - s.x, pos.y - s.y, s.x, s.y);
+    ctx.strokeStyle = "blue";
+    const vpw = this.width * this.scale / this.camera.postion.z;
+    const vph = this.height * this.scale / this.camera.postion.z;
+    
+    ctx.strokeRect((pos.x - vpw / 2), (pos.y - vph / 2), vpw, vph);
+    ctx.beginPath();
+    ctx.moveTo(pos.x - 10, pos.y);
+    ctx.lineTo(pos.x + 10, pos.y);
+    ctx.moveTo(pos.x, pos.y - 10);
+    ctx.lineTo(pos.x, pos.y + 10);
+    ctx.stroke();
   }
 
   create(graph:Graph) {
@@ -87,14 +85,16 @@ export default class MiniMapRender extends Render {
 
     this.scale = scale;
     this.offset = offset;
-    
+
+    this.mapLayer.ctx.fillStyle = "#FFFFFFCC";
+    this.mapLayer.ctx.fillRect(0, 0, this.width, this.height);
     this.mapLayer.ctx.fillStyle = 'black';
 
     this.mapLayer.ctx.fillRect(center.x-2, center.y-2, 2, 2)
 
-    // graph.nodeList.forEach((n:Node) => {
-    //   this.drawNode(n, scale, offset);
-    // });
+    graph.nodeList.forEach((n:Node) => {
+      this.drawNode(n, scale, offset);
+    });
   }
 
   drawNode(node:Node, scale:number, offset:Point2D) {

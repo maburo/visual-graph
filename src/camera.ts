@@ -22,7 +22,7 @@ export class Camera {
   private x:number = 0;
   private y:number = 0;
   private z:number = 1;
-  maxZoom = 40
+  maxZoom = 1;
   minZoom = 0.05;
   zoomSense:number = 0.001;
   isDirty = true;
@@ -47,8 +47,6 @@ export class Camera {
   }
 
   zoom(value:number, center?:Point2D) {
-    console.log(this.z);
-    
     this.z = clamp(this.z + value * this.zoomSense, this.minZoom, this.maxZoom);
     this.isDirty = true;
   }

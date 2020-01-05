@@ -1,7 +1,8 @@
 import { Viewport, Camera } from './camera';
-import { Render, BBox, Matrix3D } from './render';
+import { Render, BBox, Matrix3D, Point2D } from './render';
 import Node from './node';
 import Graph from './graph';
+import { NodeComponent } from './components/node';
 
 const svgNS = "http://www.w3.org/2000/svg";
 
@@ -16,7 +17,8 @@ function createSvgNode(type:string, options:any) {
 export default class SvgRender extends Render {
   private svg:SVGElement;
   private container:SVGElement;
-
+  private mousePos:Point2D = new Point2D();
+  private zoomToCursor = true;
   bbox:BBox;
 
   constructor(camera:Camera) {
@@ -28,10 +30,16 @@ export default class SvgRender extends Render {
     this.svg.style.width = '100%';
     this.svg.style.height = '100%';
 
+    this.svg.addEventListener('mousemove', (e) => this.onMouseMove(e));
+
     this.container = createSvgNode('g', {});
     this.svg.appendChild(this.container);
 
     this.render();
+  }
+
+  onMouseMove(e:MouseEvent) {
+    this.mousePos = new Point2D(e.x, e.y);
   }
 
   onResize(x:number, y:number) {
@@ -96,6 +104,15 @@ export default class SvgRender extends Render {
       fill: 'red',
       r: '30'
     }))
+
+    this.container.appendChild(createSvgNode('rect', {
+      x: graph.bbox.min.x,
+      y: graph.bbox.min.y,
+      width: graph.bbox.width,
+      height: graph.bbox.height,
+      fill: 'none',
+      stroke: 'black'
+    }))
   }
 
   /**
@@ -108,19 +125,24 @@ export default class SvgRender extends Render {
     const trMtx = this.camera.translationMtx;
     const scaleMtx = this.camera.scaleMtx;
 
-    const vpT = Matrix3D.translationMtx(window.innerWidth / 2, 
-                            window.innerHeight / 2)
-    const vpR = Matrix3D.translationMtx(- window.innerWidth / 2, 
-                              - window.innerHeight / 2)
+    const vpMtx = this.createViewportMtx();
+    const invVpMtx = [1, 0, vpMtx[2], 0, 1, vpMtx[5], 0, 0, 1];
 
-    let m = Matrix3D.mul(trMtx, scaleMtx);
-    m = Matrix3D.mul(vpT, scaleMtx)
-    m = Matrix3D.mul(m, vpR);
-    m = Matrix3D.mul(m, trMtx)
-    // m = Matrix3D.mul(m, trMtx)
-    // m = Matrix3D.mul(vpT, trMtx)
-    // const matrix = `matrix(${pos.z},0,0,${pos.z},${-pos.x},${-pos.y})`;
+    // let m = Matrix3D.mul(trMtx, scaleMtx);
+    let m = Matrix3D.mul(vpMtx, scaleMtx);
+    m = Matrix3D.mul(m, invVpMtx);
+    m = Matrix3D.mul(m, trMtx);
+
     const matrix = `matrix(${m[0]},${m[3]},${m[1]},${m[4]},${m[2]},${m[5]})`;
     this.container.setAttributeNS(null, 'transform', matrix);
+  }
+
+  createViewportMtx() {
+    // if (this.zoomToCursor) {
+    //   return Matrix3D.translationMtx(this.mousePos.x, this.mousePos.y);
+    // } else {
+      return Matrix3D.translationMtx(window.innerWidth / 2, 
+        window.innerHeight / 2);
+    // }
   }
 }

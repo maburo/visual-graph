@@ -43,6 +43,14 @@ export class Point3D {
     this.y = y;
     this.z = z;
   }
+
+  mul(num:number) {
+    return new Point3D(this.x * num, this.y * num, this.z * num);
+  }
+
+  addScalar(num:number) {
+    return new Point3D(this.x + num, this.y + num, this.z + num);
+  }
 }
 
 export class Point2D {
