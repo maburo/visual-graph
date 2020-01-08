@@ -1,0 +1,20 @@
+<svg width="210mm" height="297mm" version="1.1" viewBox="0 0 210 297" xmlns="http://www.w3.org/2000/svg">
+ <g id="one-time-audience" transform="matrix(1.6163 0 0 1.6163 1.371 1.0111)">
+  <rect id="body" width="99.016" height="19.803" rx=".37131" ry=".37131" fill="#29b899" stroke-width=".41118"/>
+  <path d="m7.1314 8.2422v3.9422l3.4372-1.9844z" fill="#fff"/>
+  <text x="-47.348469" y="-100.20257" fill="#000000" font-family="sans-serif" font-size="12px" letter-spacing="0px" stroke-width=".42765" word-spacing="0px" style="line-height:1.25" xml:space="preserve"><tspan x="16.419554" y="9.0228853" fill="#ffffff" font-family="sans-serif" font-size="6.1114px" stroke-width=".42765">One-time audience</tspan></text>
+ </g>
+ <g id="sms" transform="translate(1.1458 35.167)" sms="g390">
+  <rect x=".95948" width="158.76" height="37" fill="#fff" stroke-width="1.5166"/>
+  <rect width="1.3139" height="37" fill="#29b899" stroke-width="1.1981"/>
+  <g transform="matrix(1.5897,0,0,1.5897,-50.409,-287.9)" stroke-width=".26458">
+   <path d="m40.868 189.41c-0.29316 0-0.52917 0.23601-0.52917 0.52917v3.2799c0 0.29316 0.23601 0.52917 0.52917 0.52917h1.2015v1.5679l1.2232-1.5679h2.19c0.29316 0 0.52917-0.23601 0.52917-0.52917v-3.2799c0-0.29316-0.23601-0.52917-0.52917-0.52917z" fill="#7383bf"/>
+   <path d="m43.633 186.91c-0.29316 0-0.52917 0.23601-0.52917 0.52917v1.5157h2.8432c0.29316 0 0.52917 0.23601 0.52917 0.52917v1.7642h0.0155l1.2232 1.5679v-1.5679h0.53278c0.29316 0 0.52917-0.23601 0.52917-0.52916v-3.2799c0-0.29316-0.23601-0.52917-0.52917-0.52917z" fill="#26b99a"/>
+  </g>
+  <text x="38.358814" y="16.99868" fill="#000000" font-family="sans-serif" font-size="16.824px" letter-spacing="0px" stroke-width=".4206" word-spacing="0px" style="line-height:1.25" xml:space="preserve"><tspan x="38.358814" y="16.99868" font-size="8.9727px" stroke-width=".4206">SMS from 990</tspan></text>
+ </g>
+ <g id="exit" transform="translate(2.2447 76.066)">
+  <rect width="59.732" height="20.477" rx="9.7102" ry="9.7102" fill="#fff" stroke-width=".28745"/>
+  <rect x="9.9321" y="6.27" width="7.9375" height="7.9375" fill="#cf2828" fill-opacity=".56863" stroke-width=".26458"/>
+ </g>
+</svg>

@@ -1,7 +1,7 @@
-import { Camera } from "./camera";
-import { BBox, Render, Point2D } from "./render";
-import Node from "./node";
-import Graph from "./graph";
+import Camera from "../camera";
+import { AABB, Renderer, Point2D } from "../render";
+import Node from "../../node";
+import Graph from "../../graph";
 
 interface Layer {
   canvas: HTMLCanvasElement;
@@ -14,32 +14,29 @@ function createLayer(): Layer {
   return { canvas, ctx };
 }
 
-export default class MiniMapRender extends Render {
+export default class MiniMapRender extends Renderer {
   width:number;
   height:number;
-  bbox:BBox;
   private size:number;
   private mapLayer: Layer;
   private camLayer: Layer;
   private scale:number;
   private root:HTMLElement;
   private offset:Point2D = new Point2D();
+  private bbox:AABB;
 
-  constructor(root:HTMLElement, camera:Camera, size:number) {
+  constructor(camera:Camera, bbox:AABB, size:number) {
     super(camera);
     this.size = size;
+    this.bbox = bbox;
   }
 
   init(width:number, height:number) {
     this.root = document.createElement('div');
     this.root.setAttribute('class', 'minimap');
-    this.width = width * this.size;
-    this.height = height * this.size;
-
+  
     this.mapLayer = createLayer();
     this.camLayer = createLayer();
-
-    this.onResize(this.width, this.height);
 
     this.root.appendChild(this.mapLayer.canvas);
     this.root.appendChild(this.camLayer.canvas);
@@ -49,16 +46,17 @@ export default class MiniMapRender extends Render {
     return this.root;
   }
 
-  onResize(x:number, y:number) {    
+  onResize(size:Point2D) {    
+    this.width = size.x * this.size;
+    this.height = size.y * this.size;
+
     this.mapLayer.canvas.width = this.width;
     this.mapLayer.canvas.height = this.height;
     this.camLayer.canvas.width = this.width;
     this.camLayer.canvas.height = this.height;
-    // this.width = x;
-    // this.height = y;
   }
 
-  render() {
+  render(delta:number, graph:Graph) {    
     const ctx = this.camLayer.ctx;
     const pos = new Point2D(this.camera.postion.x, this.camera.postion.y)
     .mul(this.scale)
@@ -66,8 +64,8 @@ export default class MiniMapRender extends Render {
     
     ctx.clearRect(0, 0, this.width, this.height);
     ctx.strokeStyle = "blue";
-    const vpw = this.width * this.scale / this.camera.postion.z;
-    const vph = this.height * this.scale / this.camera.postion.z;
+    const vpw = this.camera.viewportSize.x * this.scale / this.camera.postion.z;
+    const vph = this.camera.viewportSize.y * this.scale / this.camera.postion.z;
     
     ctx.strokeRect((pos.x - vpw / 2), (pos.y - vph / 2), vpw, vph);
     ctx.beginPath();
@@ -79,9 +77,9 @@ export default class MiniMapRender extends Render {
   }
 
   create(graph:Graph) {
-    const scale = Math.min(this.height / graph.bbox.height, this.width / graph.bbox.width);
+    const scale = Math.min(this.height / this.bbox.height, this.width / this.bbox.width);
     const center = new Point2D(this.width / 2, this.height / 2);
-    const offset = center.sub(graph.bbox.center.mul(scale));
+    const offset = center.sub(this.bbox.center.mul(scale));
 
     this.scale = scale;
     this.offset = offset;

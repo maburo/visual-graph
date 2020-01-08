@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Camera, Viewport } from './camera';
-import Grap from './graph';
+import Camera from './render/camera';
 import App from './components/App';
 import Graph from './graph';
-import SvgRender from './svgRenderer';
-import { Point2D } from './render';
+import SvgRender from './render/svg/svgRenderer';
+import WebGlRenderer from './render/gl/glRender';
+import './styles/style.scss'
 
 declare global {
   interface Window { setLod: (lvl:number) => void; }
@@ -13,26 +13,18 @@ declare global {
 
 const graphElement = document.getElementById('graph');
 
-const camera = new Camera(new Viewport(0, 0, 2300, 2300));
-
+const camera = new Camera();
 const render = new SvgRender(camera);
-
-const graph = new Graph(graphElement, render, camera);
-graph.enableMinimap = true;
-graph.init();
+const graph = new Graph(graphElement);
+graph.renderer = render;
 graph.render();
 
-ReactDOM.render (<App />, document.getElementById("app"));
+// ReactDOM.render (<App />, document.getElementById("app"));
 
 let mousedown = false;
 let mouseX = 0, mouseY = 0;
 
-graphElement.addEventListener('resize', (e) => {
-  console.log(e);
-  
-});
-
-graphElement.addEventListener("wheel", (e) => { camera.zoom(e.deltaY) })
+graphElement.addEventListener("wheel", (e) => { camera.zoom(-e.deltaY) })
 
 graphElement.addEventListener('mousedown', (e) => { 
   mousedown = true; 
@@ -45,7 +37,7 @@ graphElement.addEventListener('mouseup', (e) => { mousedown = false; })
 graphElement.addEventListener('mousemove', (e) => {
   if (mousedown) {
     e.preventDefault();
-    camera.move((mouseX - e.x) * 2, (mouseY - e.y) * 2);
+    camera.move(mouseX - e.x, mouseY - e.y);
   }
   mouseX = e.x;
   mouseY = e.y;
@@ -63,12 +55,6 @@ document.addEventListener('keypress', (e) => {
   }  
 });
 
-window.addEventListener('resize', (e) => {  
-  graph.size = new Point2D(window.innerWidth, window.innerHeight);
-});
-
-graph.size = new Point2D(window.innerWidth, window.innerHeight);
-
 graphElement.addEventListener('touchmove', (e) => {
   console.log(e);  
 });
@@ -78,3 +64,23 @@ fetch('/big_graph.json')
 .then((json:string) => {
   graph.create(json);
 });
+
+(window as any).changeRender = (value:string) => {
+  switch (value) {
+    case 'svg':
+      graph.renderer = new SvgRender(camera);
+      break;
+    case 'webgl':
+      graph.renderer = new WebGlRenderer(camera);
+      break;
+  }
+}
+
+(window as any).changeZoomMode = (value:string) => {
+  switch (value) {
+    case 'center':
+      break;
+    case 'mouse':
+      break;
+  }
+}

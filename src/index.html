@@ -6,8 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">     
     <title>TypeScript + React</title> 
   </head> 
-  <body> 
-    <div id="app"></div>
-    <div id="graph"></div>
+  <body>
+    <div class="box">
+      <form class="menu">
+        <label>Render: </label>
+        <select onchange="changeRender(value)">
+          <option value="svg">SVG</option>
+          <option value="webgl">WebGL</option>
+        </select>
+
+        <label>Zoom to: </label>
+        <select onchange="changeZoomMode(value)">
+          <option value="center">Center</option>
+          <option value="mouse">Mouse</option>
+        </select>
+      </form>
+      <!-- <div id="app"></div> -->
+      <div id="graph"></div>
+    </div>
   </body>
 </html>

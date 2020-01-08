@@ -1,6 +1,5 @@
-import { Camera } from "./camera";
-import MiniMapRender from "./miniMapRender";
-import { Render, BBox, Point2D } from "./render";
+// import Camera from "./camera";
+import { Renderer, AABB, Point2D } from "./render/render";
 import Node from "./node";
 
 interface IEdgeMap {
@@ -54,41 +53,33 @@ class EdgeMap {
  */
 export default class Graph {
   private root:HTMLElement;
-  private lod:number = 0;
-  private nodes:Node[];
-  private mainRender:Render;
-  private minimap:MiniMapRender;
-  private _bbox:BBox = new BBox();
-  private camera:Camera;
+  private nodes:Node[] = [];
+  private renderEngine:Renderer;
   private nodeMap:INodeMap = {};
   private edgeMap:EdgeMap = new EdgeMap();
   private width:number;
   private height:number;
-  
+  private time:number;
 
-  constructor(root:HTMLElement, render:Render, camera:Camera) {
+  constructor(root:HTMLElement) {
     this.root = root;
-    this.mainRender = render;
-    this.camera = camera;
   }
 
   set enableMinimap(value:boolean) {
-    if (value) {      
-      this.minimap = new MiniMapRender(this.root, this.camera, .25);
-      this.minimap.init(this.root.clientWidth, this.root.clientHeight);
-      this.root.appendChild(this.minimap.domElement);
-    }
+    this.renderEngine.enableMinimap = value;
   }
 
-  set size(value:Point2D) {
-    this.root.style.width = value.x + 'px';
-    this.root.style.height = value.y + 'px';
-    this.mainRender.onResize(value.x, value.y);
-    this.minimap.onResize(value.x, value.y);
-    this.width = value.x;
-    this.height = value.y;
+  set renderer(renderer:Renderer) {
+    if (this.renderEngine) {
+      this.root.removeChild(this.renderEngine.domElement);
+    }
+    
+    this.renderEngine = renderer;
+    this.renderEngine.init(this.size.x, this.size.y);
+    this.renderEngine.onResize(new Point2D(this.width, this.height));
+    this.root.appendChild(this.renderEngine.domElement);
 
-    this.camera.size = this.size;
+    this.renderEngine.create(this);
   }
 
   get size():Point2D {
@@ -107,35 +98,31 @@ export default class Graph {
     return this.nodeMap[id];
   }
 
-  get bbox() {
-    return this._bbox;
-  }
+  render() {    
+    const now = Date.now()
+    const delta = now - this.time;
 
-  init() {
-    this.mainRender.init(this.root.clientWidth, this.root.clientHeight);
-    this.root.append(this.mainRender.domElement);
-  }
+    this.checkSize();
+    this.renderEngine.render(delta,this);
 
-  render() {
-    if (this.camera.update()) {
-      this.mainRender.render();
-      this.minimap.render();
-    }
-
+    this.time = now;
     window.requestAnimationFrame(() => this.render());
   }
 
-  onResize() {
+  checkSize() {
+    if (this.root.clientWidth != this.width || this.root.clientHeight != this.height) {
+      this.width = this.root.clientWidth;
+      this.height = this.root.clientHeight;
+      this.renderEngine.onResize(new Point2D(this.width, this.height));
+      return true;
+    }
 
-  }
-
-  setLodLevel(value:number) {
-    this.lod = value;
+    return false;
   }
 
   create(graph:any) {
     this.nodes = graph.flowData.flowElements.map((el:any) => {      
-      const node = new Node(el.id, el.diagramX, el.diagramY);
+      const node = new Node(el.id, el.type, el, el.diagramX, el.diagramY);
 
       el.rules?.forEach((rule:any) => {        
         this.edgeMap.put(node.id, new Edge(rule.nextElementId, EdgeDirection.out));
@@ -145,16 +132,20 @@ export default class Graph {
       if (el.action?.nextElementId) {
         this.edgeMap.put(node.id, new Edge(el.action.nextElementId, EdgeDirection.out));
         this.edgeMap.put(el.action.nextElementId, new Edge(node.id, EdgeDirection.in));
-      }      
+      }
       
-      this._bbox.addPoint(node.x, node.y);
       this.nodeMap[node.id] = node;
       return node;
     });
-   
-    this.minimap.create(this);
-    this.mainRender.create(this);
 
-    this.camera.bbox = this._bbox;    
+    this.renderEngine.create(this);  
+  }
+
+  addNode() {
+
+  }
+
+  addEdge() {
+
   }
 }

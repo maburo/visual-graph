@@ -1,6 +1,7 @@
 const path = require('path');
-
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackHotPlugin = require('html-webpack-hot-plugin');
+const htmlHotPlugin = new HtmlWebpackHotPlugin({ hot: true })
 
 module.exports = {
   entry: './src/index.tsx',
@@ -15,10 +16,17 @@ module.exports = {
     contentBase: path.join(__dirname, 'dist'),
     // compress: true,
     port: 9000,
-    open: false
+    open: false,
+    before(app, server) {
+      htmlHotPlugin.setDevServer(server)
+    },
   },
   module: {
     rules: [
+      { 
+        test: /\.svg$/, 
+        loader: 'svg-inline-loader' 
+      },
       {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader'
@@ -34,8 +42,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/index.html'
-    })
+    new HtmlWebpackPlugin({ template: './src/index.html' }),
+    htmlHotPlugin
   ]
 }

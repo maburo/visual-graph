@@ -3,27 +3,29 @@ html {
 }
 
 body {
+  background-color: #d3d3d3;
   padding: 0;
   margin: 0;
-  min-height: 100%;
+  height: 100%;
+  // min-height: 100%;
 }
 
-#root {
-  padding: 0;
-  margin: 0;
-  height: 100vh;
-  min-height: 100%;
-  width: 100%;
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.menu {
+  flex: 0 1 atuo;
 }
 
 #graph {
+  flex: 1 1 auto;
   position: relative;
-  width: 800px;
-  height: 600px;
   overflow: hidden;
-  // width: 100%;
-  // height: 100%;
 }
+
 
 .minimap {
   border: solid 1px;
@@ -53,89 +55,96 @@ $flow-element-group-color--ivr: #7383bf;
 $flow-element-group-color--function: #41c3dd;
 
 $font-family-base: 'Roboto,Helvetica Neue,Helvetica,Arial,sans-serif';
-
 .node {
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  background-color: coral;
+  font-family: $font-family-base;
 }
 
-.flow-start-element {
-  .flow-start-element-header {
-      width: 300px;
-      height: 60px;
-      border-radius: 2px;
-      background-color: $flow-selected-color;
-      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 0 2px 0 rgba(0, 0, 0, 0.1);
-
-      &:hover {
-          box-shadow: 0 5px 8px -5px rgba(0, 0, 0, 0.4), 0 0 2px 0 rgba(0, 0, 0, 0.1);
-      }
-
-      .icon {
-          position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          width: 60px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-      }
-
-      .title {
-          position: absolute;
-          left: 60px;
-          top: 10px;
-          height: 20px;
-          font-family: $font-family-base;
-          font-size: 14px;
-          font-weight: bold;
-          font-style: normal;
-          font-stretch: normal;
-          line-height: 1.43;
-          letter-spacing: normal;
-          color: #ffffff;
-      }
-
-      .text {
-          position: absolute;
-          left: 60px;
-          top: 30px;
-          height: 20px;
-          opacity: 0.7;
-          font-family: $font-family-base;
-          font-size: 12px;
-          font-weight: normal;
-          font-style: normal;
-          font-stretch: normal;
-          line-height: 1.67;
-          letter-spacing: normal;
-          color: #ffffff;
-      }
-
-      &.warning {
-          border: 1px solid $flow-warning-color;
-          border-radius: 2px;
-      }
-
-      &.danger {
-          border: 1px solid $flow-error-color;
-          border-radius: 2px;
-      }
-  }
-
-
-  .ib-flow-decision-path {
-      top: 60px;
-  }
-
-  .ib-flow-decision-group-decisions {
-      top: 40px;
-  }
-
-  .ib-flow-decision-group-shnipple-wrapper {
-      top: 71px;
-  }
+.node:hover {
+  stroke: black;
 }
+
+// .node {
+//   width: 50px;
+//   height: 50px;
+//   position: absolute;
+//   background-color: coral;
+// }
+
+// .flow-start-element {
+//   .flow-start-element-header {
+//       width: 300px;
+//       height: 60px;
+//       border-radius: 2px;
+//       background-color: $flow-selected-color;
+//       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 0 2px 0 rgba(0, 0, 0, 0.1);
+
+//       &:hover {
+//           box-shadow: 0 5px 8px -5px rgba(0, 0, 0, 0.4), 0 0 2px 0 rgba(0, 0, 0, 0.1);
+//       }
+
+//       .icon {
+//           position: absolute;
+//           left: 0;
+//           top: 0;
+//           bottom: 0;
+//           width: 60px;
+//           display: flex;
+//           justify-content: center;
+//           align-items: center;
+//       }
+
+//       .title {
+//           position: absolute;
+//           left: 60px;
+//           top: 10px;
+//           height: 20px;
+//           font-family: $font-family-base;
+//           font-size: 14px;
+//           font-weight: bold;
+//           font-style: normal;
+//           font-stretch: normal;
+//           line-height: 1.43;
+//           letter-spacing: normal;
+//           color: #ffffff;
+//       }
+
+//       .text {
+//           position: absolute;
+//           left: 60px;
+//           top: 30px;
+//           height: 20px;
+//           opacity: 0.7;
+//           font-family: $font-family-base;
+//           font-size: 12px;
+//           font-weight: normal;
+//           font-style: normal;
+//           font-stretch: normal;
+//           line-height: 1.67;
+//           letter-spacing: normal;
+//           color: #ffffff;
+//       }
+
+//       &.warning {
+//           border: 1px solid $flow-warning-color;
+//           border-radius: 2px;
+//       }
+
+//       &.danger {
+//           border: 1px solid $flow-error-color;
+//           border-radius: 2px;
+//       }
+//   }
+
+
+//   .ib-flow-decision-path {
+//       top: 60px;
+//   }
+
+//   .ib-flow-decision-group-decisions {
+//       top: 40px;
+//   }
+
+//   .ib-flow-decision-group-shnipple-wrapper {
+//       top: 71px;
+//   }
+// }
