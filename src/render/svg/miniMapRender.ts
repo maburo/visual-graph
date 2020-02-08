@@ -23,12 +23,15 @@ export default class MiniMapRender extends Renderer {
   private scale:number;
   private root:HTMLElement;
   private offset:Point2D = new Point2D();
-  private bbox:AABB;
+  private graph:Graph;
 
   constructor(camera:Camera, bbox:AABB, size:number) {
     super(camera);
     this.size = size;
     this.bbox = bbox;
+  }
+
+  onMouseMove(x:number, y:number) {
   }
 
   init(width:number, height:number) {
@@ -54,9 +57,12 @@ export default class MiniMapRender extends Renderer {
     this.mapLayer.canvas.height = this.height;
     this.camLayer.canvas.width = this.width;
     this.camLayer.canvas.height = this.height;
+
+    if (this.graph)
+      this.create(this.graph);
   }
 
-  render(delta:number, graph:Graph) {    
+  render(delta:number, graph:Graph) {
     const ctx = this.camLayer.ctx;
     const pos = new Point2D(this.camera.postion.x, this.camera.postion.y)
     .mul(this.scale)
@@ -77,6 +83,7 @@ export default class MiniMapRender extends Renderer {
   }
 
   create(graph:Graph) {
+    this.graph = graph;
     const scale = Math.min(this.height / this.bbox.height, this.width / this.bbox.width);
     const center = new Point2D(this.width / 2, this.height / 2);
     const offset = center.sub(this.bbox.center.mul(scale));

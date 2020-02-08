@@ -14,15 +14,15 @@ export default class NodeFactory {
   parser = new DOMParser();
 
   create(data:any) {
-    if (data.type === 'SEND_ACTION') {
-      return this.sms(data)
-    } else if (data.type == 'EXIT') {
-      return this.exit(data);
-    } else {
-      console.log(data.type);
+    // if (data.type === 'SEND_ACTION') {
+    //   return this.sms(data)
+    // } else if (data.type == 'EXIT') {
+    //   return this.exit(data);
+    // } else {
+    //   console.log(data.type);
       
       return this.createNode(data);
-    }
+    // }
   }
 
   exit(data:any) {

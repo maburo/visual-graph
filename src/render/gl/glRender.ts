@@ -48,6 +48,9 @@ export default class WebGlRenderer extends Renderer {
   private root:HTMLCanvasElement;
   private gl:WebGLRenderingContext;
 
+  onMouseMove(x:number, y:number) {
+  }
+
   render(delta:number, grap:Graph) {
     this.camera.update(delta);
 

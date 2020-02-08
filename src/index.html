@@ -12,6 +12,7 @@
         <label>Render: </label>
         <select onchange="changeRender(value)">
           <option value="svg">SVG</option>
+          <option value="html">HTML</option>
           <option value="webgl">WebGL</option>
         </select>
 
@@ -20,6 +21,18 @@
           <option value="center">Center</option>
           <option value="mouse">Mouse</option>
         </select>
+
+        <span class="coords">
+          <span style="width: 100px;" id="px">X: 0</span>
+          <span style="width: 100px;" id="py">Y: 0</span>
+          <span style="width: 100px;" id="pz">Z: 0</span>
+        </span>
+
+        <span class="coords">
+          <span style="width: 100px;" id="mx">X: 0</span>
+          <span style="width: 100px;" id="my">Y: 0</span>
+          <span style="width: 100px;" id="mz">Z: 0</span>
+        </span>
       </form>
       <!-- <div id="app"></div> -->
       <div id="graph"></div>

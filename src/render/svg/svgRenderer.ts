@@ -1,5 +1,5 @@
 import Camera from '../camera';
-import { Renderer, Matrix3D, Point2D, AABB } from '../render';
+import { Renderer, Matrix3D, Point2D, AABB, Point3D } from '../render';
 import Graph from '../../graph';
 import MiniMapRender from './miniMapRender';
 import { QuadTree } from '../scene';
@@ -22,12 +22,12 @@ export default class SvgRender extends Renderer {
   private mousePos:Point2D = new Point2D();
   private root:HTMLElement;
   private nodes:any[] = [];
-  private viewportSize:Point2D
+  // private viewportSize:Point2D
   private qTree:QuadTree = new QuadTree(5, -5000, -5000, 5000, 5000);
-  private bbox:AABB = new AABB();
   
   constructor(camera:Camera) {
     super(camera);
+    camera.zoomSense = 0.001;
   }
 
   init(width:number, height:number) {
@@ -35,7 +35,7 @@ export default class SvgRender extends Renderer {
     this.svg.style.width = '100%';
     this.svg.style.height = '100%';
 
-    this.svg.addEventListener('mousemove', (e) => this.onMouseMove(e));
+    // this.svg.addEventListener('mousemove', (e) => this.onMouseMove(e));
 
     this.container = createSvgNode('g', {});
     this.svg.appendChild(this.container);
@@ -49,14 +49,14 @@ export default class SvgRender extends Renderer {
     this.root.appendChild(this.svg);
   }
 
-  onMouseMove(e:MouseEvent) {
-    this.mousePos = new Point2D(e.x, e.y);
+  onMouseMove(x:number, y:number) {
+    this.mousePos = new Point2D(x, y);
   }
 
   onResize(size:Point2D) {
     this.root.style.width = size.x + 'px';
     this.root.style.height = size.y + 'px';
-    this.viewportSize = size;
+    // this.viewportSize = size;
     this.minimap.onResize(size);
     this.camera.viewportSize = size;
   }
@@ -106,6 +106,36 @@ export default class SvgRender extends Renderer {
       r: '10'
     }))
 
+    this.container.appendChild(createSvgNode('line', {
+      x1: -100,
+      y1: 0,
+      x2: 100,
+      y2: 0,
+      style: 'stroke:rgb(255,0,0);stroke-width:1'
+    }));
+
+    this.container.appendChild(createSvgNode('line', {
+      x1: 0,
+      y1: -100,
+      x2: 0,
+      y2: 100,
+      style: 'stroke:rgb(255,0,0);stroke-width:1'
+    }));
+
+    this.container.appendChild(createSvgNode('circle', {
+      cx: 300,
+      cy: 300,
+      fill: 'green',
+      r: '10'
+    }))
+
+    this.container.appendChild(createSvgNode('circle', {
+      cx: 600,
+      cy: 600,
+      fill: 'green',
+      r: '10'
+    }))
+
     this.container.appendChild(createSvgNode('rect', {
       x: this.bbox.minX,
       y: this.bbox.minY,
@@ -115,7 +145,7 @@ export default class SvgRender extends Renderer {
       stroke: 'black'
     }))
 
-    this.minimap.create(graph);
+    // this.minimap.create(graph);
 
     // this.renderQTree(this.qTree);
   }
@@ -139,6 +169,8 @@ export default class SvgRender extends Renderer {
     this.container.appendChild(svg);
   }
 
+  invMtx:number[] = Matrix3D.identity;
+
   /**
    * a  c  e | 0 1 2
    * b  d  f | 3 4 5
@@ -147,27 +179,66 @@ export default class SvgRender extends Renderer {
   render(delta:number, graph:Graph) {
     const trMtx = this.camera.translationMtx;
     const scaleMtx = this.camera.scaleMtx;
-    const vpMtx = this.camera.viewportMtx;
-    const invVpMtx = [1, 0, vpMtx[2], 0, 1, vpMtx[5], 0, 0, 1];
-   
     this.camera.update(delta);
+
+    const mp = this.mousePos
+    // .sub(this.camera.viewportSize.div(2))
+    .div(this.camera.zoomLevel)
+    .add(this.camera.postion.xy)
+    
+
+    const z = this.camera.zoomLevel;
+    const hvp = this.camera.viewportSize.div(2);
   
-    let mouseViewportPos = this.mousePos.sub(this.viewportSize.div(2));
-    let mouseWorldCoord = new Point2D(
-      this.camera.postion.x + mouseViewportPos.x / this.camera.postion.z,
-      this.camera.postion.y + mouseViewportPos.y / this.camera.postion.z);
-    let mouseMtx = mouseWorldCoord.translation;
-    
     let m = Matrix3D.identity;
+    if (this.zoomToCursor) {
+
+    } else {
+      // const mm = new Point3D(this.mousePos.x, this.mousePos.y)
+      
+      m = Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
+      m = Matrix3D.mul(m, this.camera.scaleMtx);
+      m = Matrix3D.mul(m, Matrix3D.translation(-hvp.x, -hvp.y));
+      m = Matrix3D.mul(m, this.camera.translationMtx);
+      m = Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
+
+      // this.invMtx = Matrix3D.copy(m)
+    }
+
+    if (this.mouseScreenPos) {
+      const rect = this.domElement.getBoundingClientRect()
+      const x = this.mousePos.x;
+      const y = this.mousePos.y;
+
+      // let mm = Matrix3D.identity;
+      // mm = Matrix3D.mul(m, Matrix3D.translation(-hvp.x, -hvp.y));
+      // m = Matrix3D.mul(m, this.camera.scaleMtx);
+      // m = Matrix3D.mul(m, Matrix3D.translation(-hvp.x, -hvp.y));
+      // m = Matrix3D.mul(m, this.camera.translationMtx);
+      // m = Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
+
+      // let msp = new Point2D(x, y)
+      // console.log('offset', msp);      
+      // msp = msp.add(hvp.neg())
+      // console.log('vp', msp);
+      // msp = msp.add(this.camera.postion.xy)
+      // console.log('tr', msp);
+      // msp = msp.mul(1 / this.camera.zoomLevel)
+      // console.log('scaled', msp);
+      var pt:SVGPoint = (this.svg as any).createSVGPoint();
+      pt.x = x;
+      pt.y = y;
+      const svgMtx = (this.container as any).getScreenCTM().inverse();
+      pt = pt.matrixTransform(svgMtx)
+
+      this.mouseScreenPos(pt.x, pt.y);
+    }
     
-    m = Matrix3D.mul(vpMtx, scaleMtx)
-    m = Matrix3D.mul(m, invVpMtx)
-    m = Matrix3D.mul(m, trMtx);
     const matrix = `matrix(${m[0]},${m[3]},${m[1]},${m[4]},${m[2]},${m[5]})`;
     this.container.setAttributeNS(null, 'transform', matrix);
 
     if (this.enableMinimap) {
-      this.minimap.render(delta, graph);
+      // this.minimap.render(delta, graph);
     }
   }
 }

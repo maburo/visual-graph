@@ -1,30 +1,18 @@
-html {
-  height: 100%;
-}
-
-body {
-  background-color: #d3d3d3;
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  // min-height: 100%;
-}
-
 .box {
   display: flex;
   flex-flow: column;
   height: 100%;
 }
 
-.menu {
-  flex: 0 1 atuo;
-}
+// .menu {
+//   flex: 0 1 atuo;
+// }
 
-#graph {
-  flex: 1 1 auto;
-  position: relative;
-  overflow: hidden;
-}
+// #graph {
+//   flex: 1 1 auto;
+//   position: relative;
+//   overflow: hidden;
+// }
 
 
 .minimap {
@@ -39,112 +27,17 @@ body {
   position: absolute;
 }
 
-// Colors
-$flow-dark-color: #242424;
-$flow-dark-gray: #545454;
-$flow-light-gray: #b4b4b4;
-$flow-lighter-gray: #d3d3d3;
-// $flow-focus-color: $link-color;
-$flow-error-color: #c84714;
-$flow-warning-color: #f1af52;
-$flow-selected-color: #29b899;
-// $flow-success-color: $brand-success;
+.graph {
+  .container {
+    transform-origin: 0px 0px;
+    position: relative;
+  }
 
-$flow-element-group-color--channel: #26b99a;
-$flow-element-group-color--ivr: #7383bf;
-$flow-element-group-color--function: #41c3dd;
-
-$font-family-base: 'Roboto,Helvetica Neue,Helvetica,Arial,sans-serif';
-.node {
-  font-family: $font-family-base;
+  .node {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background-color: black;
+  }
 }
 
-.node:hover {
-  stroke: black;
-}
-
-// .node {
-//   width: 50px;
-//   height: 50px;
-//   position: absolute;
-//   background-color: coral;
-// }
-
-// .flow-start-element {
-//   .flow-start-element-header {
-//       width: 300px;
-//       height: 60px;
-//       border-radius: 2px;
-//       background-color: $flow-selected-color;
-//       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 0 2px 0 rgba(0, 0, 0, 0.1);
-
-//       &:hover {
-//           box-shadow: 0 5px 8px -5px rgba(0, 0, 0, 0.4), 0 0 2px 0 rgba(0, 0, 0, 0.1);
-//       }
-
-//       .icon {
-//           position: absolute;
-//           left: 0;
-//           top: 0;
-//           bottom: 0;
-//           width: 60px;
-//           display: flex;
-//           justify-content: center;
-//           align-items: center;
-//       }
-
-//       .title {
-//           position: absolute;
-//           left: 60px;
-//           top: 10px;
-//           height: 20px;
-//           font-family: $font-family-base;
-//           font-size: 14px;
-//           font-weight: bold;
-//           font-style: normal;
-//           font-stretch: normal;
-//           line-height: 1.43;
-//           letter-spacing: normal;
-//           color: #ffffff;
-//       }
-
-//       .text {
-//           position: absolute;
-//           left: 60px;
-//           top: 30px;
-//           height: 20px;
-//           opacity: 0.7;
-//           font-family: $font-family-base;
-//           font-size: 12px;
-//           font-weight: normal;
-//           font-style: normal;
-//           font-stretch: normal;
-//           line-height: 1.67;
-//           letter-spacing: normal;
-//           color: #ffffff;
-//       }
-
-//       &.warning {
-//           border: 1px solid $flow-warning-color;
-//           border-radius: 2px;
-//       }
-
-//       &.danger {
-//           border: 1px solid $flow-error-color;
-//           border-radius: 2px;
-//       }
-//   }
-
-
-//   .ib-flow-decision-path {
-//       top: 60px;
-//   }
-
-//   .ib-flow-decision-group-decisions {
-//       top: 40px;
-//   }
-
-//   .ib-flow-decision-group-shnipple-wrapper {
-//       top: 71px;
-//   }
-// }

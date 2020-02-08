@@ -82,6 +82,10 @@ export default class Graph {
     this.renderEngine.create(this);
   }
 
+  get renderer() {
+    return this.renderEngine;
+  }
+
   get size():Point2D {
     return new Point2D(this.width, this.height);
   }

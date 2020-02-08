@@ -4,12 +4,15 @@ export default class Camera {
   private x:number = 0;
   private y:number = 0;
   private z:number = 1;
-  maxZoom = 2;
+  maxZoom = 4;
   minZoom = 0.05;
   zoomSense:number = 0.001;
   isDirty = true;
   bbox:AABB;
   viewportSize:Point2D = new Point2D();
+
+  onMove:(x:number, y:number) => void;
+  onZoom:(z:number) => void;
 
   move(x: number, y:number) {
     if (this.bbox) {
@@ -20,18 +23,23 @@ export default class Camera {
       this.y += y * (1 / this.z);
     }
 
+    if (this.onMove) this.onMove(this.x, this.y);
+
     this.isDirty = true;
   }
 
   zoom(value:number, center?:Point2D) {
     this.z = clamp(this.z + value * this.zoomSense, this.minZoom, this.maxZoom);
+
+    if (this.onZoom) this.onZoom(this.z);
+
     this.isDirty = true;
   }
 
   get translationMtx() {
     return [
-      1, 0, -this.x - this.viewportSize.x * .5,
-      0, 1, -this.y - this.viewportSize.y * .5,
+      1, 0, -this.x,// - this.viewportSize.x * .5,
+      0, 1, -this.y,// - this.viewportSize.y * .5,
       0, 0, 1
     ];
   }

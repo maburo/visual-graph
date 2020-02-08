@@ -4,9 +4,9 @@ const HtmlWebpackHotPlugin = require('html-webpack-hot-plugin');
 const htmlHotPlugin = new HtmlWebpackHotPlugin({ hot: true })
 
 module.exports = {
-  entry: './src/index.tsx',
+  entry: './src/index.ts',
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js', '.css', '.scss']
   },
   output: {
     path: path.join(__dirname, '/dist'),
@@ -28,7 +28,7 @@ module.exports = {
         loader: 'svg-inline-loader' 
       },
       {
-        test: /\.tsx?$/,
+        test: /\.ts?$/,
         loader: 'awesome-typescript-loader'
       },
       {

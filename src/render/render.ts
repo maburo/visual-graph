@@ -10,6 +10,10 @@ export function clamp(value:number, min:number, max:number) {
 export class Matrix3D {
   static identity:Array<number> = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
+  static copy(m:Array<number>) {
+    return [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
+  }
+
   static mul(a:Array<number>, b:Array<number>):Array<number> {
     return [
       a[0] * b[0] + a[1] * b[3] + a[2] * b[6],
@@ -26,33 +30,43 @@ export class Matrix3D {
     ];
   }
 
-  static mm(...m:Array<Array<number>>) {
-    return m.slice(1).reduce((acc:Array<number>, val:Array<number>) => {
-      acc[0] * val[0] + acc[1] * val[3] + acc[2] * val[6],
-      acc[0] * val[1] + acc[1] * val[4] + acc[2] * val[7],
-      acc[0] * val[2] + acc[1] * val[5] + acc[2] * val[8],
-
-      acc[3] * val[0] + acc[4] * val[3] + acc[5] * val[6],
-      acc[3] * val[1] + acc[4] * val[4] + acc[5] * val[7],
-      acc[3] * val[2] + acc[4] * val[5] + acc[5] * val[8],
-
-      acc[6] * val[0] + acc[7] * val[3] + acc[8] * val[6],
-      acc[6] * val[1] + acc[7] * val[4] + acc[8] * val[7],
-      acc[6] * val[2] + acc[7] * val[5] + acc[8] * val[8]
-      return acc;
-    }, m[0]);
-  }
-
   static invTranslation(m:Array<number>) {
     m[2] = -m[2];
     m[5] = -m[5];
     return m;
   }
 
-  mul3(a:Array<number>, b:Array<number>, c:Array<number>, d:Array<number>):Array<number> {
-    let m = Matrix3D.mul(a, b);
-    m = Matrix3D.mul(m, c);
-    return Matrix3D.mul(m, d);
+  static invert(m:Array<number>) {
+    var a00 = m[0],
+        a01 = m[1],
+        a02 = m[2];
+    var a10 = m[3],
+        a11 = m[4],
+        a12 = m[5];
+    var a20 = m[6],
+        a21 = m[7],
+        a22 = m[8];
+    var b01 = a22 * a11 - a12 * a21;
+    var b11 = -a22 * a10 + a12 * a20;
+    var b21 = a21 * a10 - a11 * a20; // Calculate the determinant
+
+    var det = a00 * b01 + a01 * b11 + a02 * b21;
+
+    if (!det) {
+      return null;
+    }
+
+    det = 1.0 / det;
+    m[0] = b01 * det;
+    m[1] = (-a22 * a01 + a02 * a21) * det;
+    m[2] = (a12 * a01 - a02 * a11) * det;
+    m[3] = b11 * det;
+    m[4] = (a22 * a00 - a02 * a20) * det;
+    m[5] = (-a12 * a00 + a02 * a10) * det;
+    m[6] = b21 * det;
+    m[7] = (-a21 * a00 + a01 * a20) * det;
+    m[8] = (a11 * a00 - a01 * a10) * det;
+    return m;
   }
 
   static translation(x:number, y:number):Array<number> {
@@ -61,6 +75,14 @@ export class Matrix3D {
       0, 1, y,
       0, 0, 1
     ]
+  }
+
+  static scale(s:number):Array<number> {
+    return [
+      s, 0, 0,
+      0, s, 0,
+      0, 0, 1
+    ];
   }
 }
 
@@ -79,8 +101,20 @@ export class Point3D {
     return new Point3D(this.x * num, this.y * num, this.z * num);
   }
 
+  mtxMul(m:number[]) {
+    return new Point3D(
+      this.x * m[0] + this.y * m[1] + this.z * m[2],
+      this.x * m[3] + this.y * m[4] + this.z * m[5],
+      this.x * m[6] + this.y * m[7] + this.z * m[8],
+    );
+  }
+
   addScalar(num:number) {
     return new Point3D(this.x + num, this.y + num, this.z + num);
+  }
+
+  get xy():Point2D {
+    return new Point2D(this.x, this.y);
   }
 }
 
@@ -97,6 +131,14 @@ export class Point2D {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
+  as3D() {
+    return new Point3D(this.x, this.y, 0);
+  }
+
+  neg() {
+    return new Point2D(-this.x, -this.y);
+  }
+
   add(p:Point2D):Point2D {
     return new Point2D(this.x + p.x, this.y + p.y);
   }
@@ -104,6 +146,10 @@ export class Point2D {
   sub(p:Point2D):Point2D {
     return new Point2D(this.x - p.x, this.y - p.y);
   }
+
+  // as3D() {
+  //   return new Point3D(this.x, this.y, 0);
+  // }
 
   div(num:number) {
     return new Point2D(this.x / num, this.y / num);
@@ -148,10 +194,27 @@ export class AABB {
   }
 
   addPoint(x:number, y:number) {
-    if (this.maxX < x) this.maxX = x;
-    if (this.minX > x) this.minX = x;
-    if (this.maxY < y) this.maxY = y;
-    if (this.minY > y) this.minY = y;
+    if (this.maxX < x) {
+      this.maxX = x;
+      return true;
+    }
+
+    if (this.minX > x) {
+      this.minX = x;
+      return true;
+    }
+
+    if (this.maxY < y) {
+      this.maxY = y;
+      return true;
+    }
+
+    if (this.minY > y) {
+      this.minY = y;
+      return true;
+    }
+
+    return false;
   }
 
   get width() {
@@ -172,10 +235,16 @@ export class AABB {
  * Render
  */
 export abstract class Renderer {
-  zoomToCursor = true;
+  zoomToCursor = false;
   readonly camera:Camera;
   protected minimap:Renderer;
-  enableMinimap:boolean = true
+  enableMinimap:boolean = true;
+  protected bbox:AABB = new AABB();
+  mouseScreenPos: (x:number, y:number) => void;
+
+  set freeCamera(enable:boolean) {
+    this.camera.bbox = enable ? null : this.bbox;
+  }
   
   constructor(camera:Camera) {
     this.camera = camera;
@@ -186,4 +255,5 @@ export abstract class Renderer {
   abstract create(graph:Graph):void;
   abstract init(width:number, height:number):void;
   abstract get domElement():HTMLElement;
+  abstract onMouseMove(x:number, y:number):void;
 }
