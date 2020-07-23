@@ -1,14 +1,16 @@
-import { Renderer, Point2D, AABB, Matrix3D, Point3D } from '../render';
+import { Renderer } from '../render';
 import Graph from '../../graph';
 import Camera from '../camera';
 import debugConsole from '../../console';
+import { Point2D, Point3D } from '../math/point';
+import { Matrix3D } from '../math/matrix';
 
 export default class HtmlRenderer extends Renderer {
   private root:HTMLElement;
   private container:HTMLElement;
   private viewportSize:Point2D;
   private mousePos:Point2D = new Point2D();
-  private viewMatrix: number[] = Matrix3D.identity;
+  private viewMatrix: number[] = Matrix3D.identity();
 
   constructor(camera:Camera) {
     super(camera);
@@ -38,7 +40,7 @@ export default class HtmlRenderer extends Renderer {
     const vpMtx = this.camera.viewportMtx;
     const invVpMtx = [1, 0, vpMtx[2], 0, 1, vpMtx[5], 0, 0, 1];
 
-    // const projectedMousePos = new Point3D(this.camera.postion.x, this.camera.postion.y, 1).mtxMul(this.viewMatrix);
+    const projectedMousePos = new Point3D(this.camera.postion.x, this.camera.postion.y, 1).mtxMul(this.viewMatrix);
 
     debugConsole.log('trMtx', trMtx)
     debugConsole.log('vp', this.camera.viewportMtx)
@@ -48,7 +50,7 @@ export default class HtmlRenderer extends Renderer {
    
     this.camera.update(delta);
     
-    let m = Matrix3D.create();
+    let m = Matrix3D.identity();
     
     m = Matrix3D.mul(m, vpMtx);
     m = Matrix3D.mul(m, scaleMtx);

@@ -1,4 +1,6 @@
-import { clamp, AABB, Point2D, Point3D } from "./render";
+import { clamp } from "./render";
+import { Point2D, Point3D } from "./math/point";
+import AABB from "./math/aabb";
 
 export default class Camera {
   private x:number = 0;

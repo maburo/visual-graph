@@ -1,6 +1,7 @@
-import { Renderer, AABB, Matrix3D, Point2D } from '../render';
+import { Renderer } from '../render';
 import Graph from '../../graph';
 import Node from '../../node';
+import { Point2D } from '../math/point';
 
 function loadShader(gl:WebGLRenderingContext, type:number, source:string) {
   const shader = gl.createShader(type);

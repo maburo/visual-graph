@@ -1,10 +1,12 @@
 import Camera from '../camera';
-import { Renderer, Matrix3D, Point2D, AABB, Point3D } from '../render';
+import { Renderer } from '../render';
 import Graph from '../../graph';
 import MiniMapRender from './miniMapRender';
 import { QuadTree } from '../scene';
 import Node from '../../node';
 import NodeFactory from './nodeFactory';
+import { Point2D } from '../math/point';
+import { Matrix3D } from '../math/matrix';
 
 const svgNS = "http://www.w3.org/2000/svg";
 
@@ -169,7 +171,7 @@ export default class SvgRender extends Renderer {
     this.container.appendChild(svg);
   }
 
-  invMtx:number[] = Matrix3D.identity;
+  invMtx:number[] = Matrix3D.identity();
 
   /**
    * a  c  e | 0 1 2
@@ -190,7 +192,7 @@ export default class SvgRender extends Renderer {
     const z = this.camera.zoomLevel;
     const hvp = this.camera.viewportSize.div(2);
   
-    let m = Matrix3D.identity;
+    let m = Matrix3D.identity();
     if (this.zoomToCursor) {
 
     } else {

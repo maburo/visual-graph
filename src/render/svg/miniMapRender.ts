@@ -1,7 +1,9 @@
 import Camera from "../camera";
-import { AABB, Renderer, Point2D } from "../render";
+import { Renderer } from "../render";
 import Node from "../../node";
 import Graph from "../../graph";
+import { Point2D } from "../math/point";
+import AABB from "../math/aabb";
 
 interface Layer {
   canvas: HTMLCanvasElement;

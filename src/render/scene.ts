@@ -1,4 +1,4 @@
-import { AABB } from './render';
+import AABB from "./math/aabb";
 
 interface Node {
   x:number;

@@ -1,6 +1,7 @@
 // import Camera from "./camera";
-import { Renderer, AABB, Point2D } from "./render/render";
+import { Renderer } from "./render/render";
 import Node from "./node";
+import { Point2D } from "./render/math/point";
 
 interface IEdgeMap {
   [key:string]: Edge[];

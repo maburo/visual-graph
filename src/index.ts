@@ -6,7 +6,6 @@ import WebGlRenderer from './render/gl/glRender';
 import './styles/dev.scss'
 import './styles/style.scss'
 import GraphController from './graphController';
-import { Point2D } from './render/render';
 
 const graphElement = document.getElementById('graph');
 
