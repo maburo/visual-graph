@@ -45,7 +45,7 @@ export default class HtmlRenderer extends Renderer {
     debugConsole.log('trMtx', trMtx)
     debugConsole.log('vp', this.camera.viewportMtx)
     debugConsole.log('screen mouse', this.mousePos)
-    // debugConsole.log('proj mouse', projectedMousePos)
+    debugConsole.log('proj mouse', projectedMousePos)
     debugConsole.log('zoom', this.camera.zoomLevel.toFixed(2))
    
     this.camera.update(delta);

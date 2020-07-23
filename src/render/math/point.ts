@@ -46,6 +46,10 @@ export class Point2D {
       0, 0, 1
     ]
   }
+
+  toString() {
+    return `[x: ${this.x.toFixed(2)}, y: ${this.y.toFixed(2)}]`;
+  }
 }
 
 export class Point3D {
@@ -77,5 +81,9 @@ export class Point3D {
 
   get xy():Point2D {
     return new Point2D(this.x, this.y);
+  }
+
+  toString() {
+    return `[x: ${this.x.toFixed(2)}, y: ${this.y.toFixed(2)}, z: ${this.z.toFixed(2)}]`;
   }
 }
