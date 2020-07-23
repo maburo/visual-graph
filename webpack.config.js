@@ -4,7 +4,7 @@ const HtmlWebpackHotPlugin = require('html-webpack-hot-plugin');
 const htmlHotPlugin = new HtmlWebpackHotPlugin({ hot: true })
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: './src/index.tsx',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.css', '.scss']
   },
@@ -28,7 +28,7 @@ module.exports = {
         loader: 'svg-inline-loader' 
       },
       {
-        test: /\.ts?$/,
+        test: /\.ts(x*)?$/,
         loader: 'awesome-typescript-loader'
       },
       {

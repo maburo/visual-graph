@@ -1,6 +1,10 @@
-import { Renderer, AABB, Matrix3D, Point2D } from '../render';
-import Graph from '../../graph';
 import Node from '../../node';
+import AABB from '../math/aabb';
+import { Point2D, Point3D } from '../math/point';
+import { Matrix3D } from '../math/matrix';
+import Graph from '../../graph';
+import Renderer from '../render';
+import Camera from '../camera';
 
 function loadShader(gl:WebGLRenderingContext, type:number, source:string) {
   const shader = gl.createShader(type);
@@ -44,14 +48,21 @@ function createShaderProgram(name:string, vsSrc:string, fsSrc:string) {
   return this.shaders[name];
 }
 
-export default class WebGlRenderer extends Renderer {
-  private root:HTMLCanvasElement;
+export default class WebGlRenderer<T> extends Renderer<T, HTMLElement> {
+  private container:HTMLCanvasElement;
   private gl:WebGLRenderingContext;
+
+  constructor(graph: Graph<T>, camera: Camera) {
+    super(graph, camera, null);
+    this.container = document.createElement('canvas');
+    this.gl = this.container.getContext('webgl');
+    camera.zoomSense = 0.0001;
+  }
 
   onMouseMove(x:number, y:number) {
   }
 
-  render(delta:number, grap:Graph) {
+  draw(delta: number, grap: Graph<unknown>): void {
     this.camera.update(delta);
 
     const gl = this.gl;
@@ -60,27 +71,35 @@ export default class WebGlRenderer extends Renderer {
     gl.depthFunc(gl.LEQUAL);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    grap.nodeList.forEach((n:Node) => {
+    grap.nodeList.forEach((n: Node<T>) => {
       
     });
   }
 
-  onResize(size:Point2D) {
-    this.root.width = size.x;
-    this.root.height = size.y;
+  toLocalCoordinates(x: number, y: number): Point3D {
+    return new Point3D();
   }
 
-  create(graph:Graph) {
-
+  addNode(node: Node<T>) {
   }
 
-  init(width:number, height:number) {
-    this.root = document.createElement('canvas');
-    this.gl = this.root.getContext('webgl');
+  removeNode(id: string) {
+  }
+
+  onResize(width: number, height: number) {
+    this.container.width = width;
+    this.container.height = height;
+  }
+
+  init(): void {
     this.gl.clearColor(0.5, 0.5, 0.5, 1);
   }
 
   get domElement():HTMLElement {
-    return this.root;
+    return this.container;
+  }
+
+  update(): void {
+    
   }
 }

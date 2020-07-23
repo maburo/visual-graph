@@ -1,4 +1,6 @@
-import { clamp, AABB, Point2D, Point3D } from "./render";
+import { clamp } from "./render";
+import AABB from './math/aabb';
+import { Point2D, Point3D } from './math/point';
 
 export default class Camera {
   private x:number = 0;
@@ -11,7 +13,6 @@ export default class Camera {
   bbox:AABB;
   viewportSize:Point2D = new Point2D();
 
-  onMove:(x:number, y:number) => void;
   onZoom:(z:number) => void;
 
   move(x: number, y:number) {
@@ -23,12 +24,10 @@ export default class Camera {
       this.y += y * (1 / this.z);
     }
 
-    if (this.onMove) this.onMove(this.x, this.y);
-
     this.isDirty = true;
   }
 
-  zoom(value:number, center?:Point2D) {
+  zoom(value:number) {
     this.z = clamp(this.z + value * this.zoomSense, this.minZoom, this.maxZoom);
 
     if (this.onZoom) this.onZoom(this.z);
@@ -38,8 +37,8 @@ export default class Camera {
 
   get translationMtx() {
     return [
-      1, 0, -this.x,// - this.viewportSize.x * .5,
-      0, 1, -this.y,// - this.viewportSize.y * .5,
+      1, 0, -this.x,
+      0, 1, -this.y,
       0, 0, 1
     ];
   }
@@ -62,6 +61,15 @@ export default class Camera {
 
   get postion():Point3D {
     return new Point3D(this.x, this.y, this.z);
+  }
+
+  setPosition(p: Point3D) {
+    // if (p.x !== 0) throw new Error()
+    this.x = p.x;
+    this.y = p.y;
+    this.z = p.z;
+
+    this.isDirty = true;
   }
   
   get zoomLevel() {

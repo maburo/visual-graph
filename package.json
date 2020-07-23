@@ -19,16 +19,20 @@
     "@storybook/addon-viewport": "5.3.9",
     "@storybook/html": "5.3.9",
     "@storybook/preset-typescript": "1.2.0",
+    "@types/classnames": "2.2.10",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
     "@types/storybook__addon-knobs": "5.2.1",
+    "@types/uuid": "7.0.2",
     "autobind-decorator": "^2.4.0",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "8.0.6",
     "css-loader": "^3.4.0",
     "html-webpack-hot-plugin": "^1.2.2",
     "html-webpack-plugin": "^3.2.0",
+    "install": "0.13.0",
     "node-sass": "^4.13.0",
+    "npm": "6.14.4",
     "react-docgen-typescript-loader": "3.6.0",
     "sass-loader": "^8.0.0",
     "source-map-loader": "^0.2.4",
@@ -41,7 +45,10 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
+    "autobind": "^1.0.3",
+    "ib-flow-typings": "file:../../../../home/alex/projects/infobip/omni_flow/ib-flow-typings",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "uuid": "^7.0.3"
   }
 }

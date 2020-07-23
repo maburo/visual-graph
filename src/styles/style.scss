@@ -14,6 +14,46 @@
 //   overflow: hidden;
 // }
 
+.facebook {
+  background-color: #3a5898;
+}
+
+.viber {
+  background-color: #7a4f9c;
+}
+
+.whatsapp {
+  background-color: #35ba63;
+}
+
+.telegram {
+  background-color: #309ee0;
+}
+
+.sms {
+  background-color: #6dfff6;
+}
+
+.email {
+  background-color: #f97f08;
+}
+
+.rcs {
+  background-color: #d54589;
+}
+
+.voip {
+  background-color: #b03dc9;
+}
+
+.new-push-notif {
+  background-color: #808080;
+}
+
+.push-sig {
+  background-color: #808080;
+}
+
 
 .minimap {
   border: solid 1px;
@@ -35,9 +75,29 @@
 
   .node {
     position: absolute;
-    width: 32px;
-    height: 32px;
-    background-color: black;
+    // width: 32px;
+    // height: 32px;
+    // color: white;
+    // margin: 3px;
+    // background-color: black;
   }
 }
+
+.ctx_menu {
+  position: fixed;
+  box-shadow: 0px 2px 10px #999999;
+
+  .ctx_menu_item {
+    padding: 10px 10px;
+    background-color: white;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #BBB;
+    }
+  }
+}
+
+
+
 
