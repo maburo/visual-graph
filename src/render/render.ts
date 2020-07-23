@@ -9,6 +9,9 @@ export function clamp(value:number, min:number, max:number) {
 
 export class Matrix3D {
   static identity:Array<number> = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  static create() {
+    return [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  }
 
   static copy(m:Array<number>) {
     return [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7]];
@@ -165,6 +168,10 @@ export class Point2D {
       0, 1, this.y,
       0, 0, 1
     ]
+  }
+
+  toString() {
+    return `x: ${this.x}, y: ${this.y}`;
   }
 }
 

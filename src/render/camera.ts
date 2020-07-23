@@ -68,6 +68,10 @@ export default class Camera {
     return this.z;
   }
 
+  set zoomLevel(value: number) {
+    this.z = value;
+  }
+
   update(delta:number):boolean {
     if (this.isDirty) {
       this.isDirty = false;

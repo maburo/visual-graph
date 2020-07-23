@@ -1,12 +1,14 @@
-import { Renderer, Point2D, AABB, Matrix3D } from '../render';
+import { Renderer, Point2D, AABB, Matrix3D, Point3D } from '../render';
 import Graph from '../../graph';
 import Camera from '../camera';
+import debugConsole from '../../console';
 
 export default class HtmlRenderer extends Renderer {
   private root:HTMLElement;
   private container:HTMLElement;
   private viewportSize:Point2D;
   private mousePos:Point2D = new Point2D();
+  private viewMatrix: number[] = Matrix3D.identity;
 
   constructor(camera:Camera) {
     super(camera);
@@ -35,15 +37,24 @@ export default class HtmlRenderer extends Renderer {
     const scaleMtx = this.camera.scaleMtx;
     const vpMtx = this.camera.viewportMtx;
     const invVpMtx = [1, 0, vpMtx[2], 0, 1, vpMtx[5], 0, 0, 1];
+
+    // const projectedMousePos = new Point3D(this.camera.postion.x, this.camera.postion.y, 1).mtxMul(this.viewMatrix);
+
+    debugConsole.log('trMtx', trMtx)
+    debugConsole.log('vp', this.camera.viewportMtx)
+    debugConsole.log('screen mouse', this.mousePos)
+    // debugConsole.log('proj mouse', projectedMousePos)
+    debugConsole.log('zoom', this.camera.zoomLevel.toFixed(2))
    
     this.camera.update(delta);
     
-    let m = Matrix3D.identity;
+    let m = Matrix3D.create();
     
-    m = Matrix3D.mul(vpMtx, scaleMtx)
-    m = Matrix3D.mul(m, invVpMtx)
+    m = Matrix3D.mul(m, vpMtx);
+    m = Matrix3D.mul(m, scaleMtx);
     m = Matrix3D.mul(m, trMtx);
-    
+
+    this.viewMatrix = Matrix3D.invert(Matrix3D.copy(m))
     this.container.style.transform = `matrix(${m[0]},${m[3]},${m[1]},${m[4]},${m[2]},${m[5]})`;
   }
 
