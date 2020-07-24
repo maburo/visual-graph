@@ -10,7 +10,7 @@ export default class HtmlRenderer extends Renderer {
   private container:HTMLElement;
   private viewportSize:Point2D;
   private mousePos:Point2D = new Point2D();
-  private viewMatrix: number[] = Matrix3D.identity();
+  invertedMtx: number[] = Matrix3D.identity();
 
   constructor(camera:Camera) {
     super(camera);
@@ -40,7 +40,7 @@ export default class HtmlRenderer extends Renderer {
     const vpMtx = this.camera.viewportMtx;
     const invVpMtx = [1, 0, vpMtx[2], 0, 1, vpMtx[5], 0, 0, 1];
 
-    const projectedMousePos = new Point3D(this.camera.postion.x, this.camera.postion.y, 1).mtxMul(this.viewMatrix);
+    const projectedMousePos = this.toLocalCoordinates(this.camera.postion.x, this.camera.postion.y);
 
     debugConsole.log('trMtx', trMtx)
     debugConsole.log('vp', this.camera.viewportMtx)
@@ -56,8 +56,12 @@ export default class HtmlRenderer extends Renderer {
     m = Matrix3D.mul(m, scaleMtx);
     m = Matrix3D.mul(m, trMtx);
 
-    this.viewMatrix = Matrix3D.invert(Matrix3D.copy(m))
+    this.invertedMtx = Matrix3D.invert(Matrix3D.copy(m));
     this.container.style.transform = `matrix(${m[0]},${m[3]},${m[1]},${m[4]},${m[2]},${m[5]})`;
+  }
+
+  toLocalCoordinates(x: number, y: number) {
+    return new Point3D(x, y, 1).mtxMul(this.invertedMtx);
   }
 
   onResize(size:Point2D):void {
