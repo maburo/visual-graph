@@ -2,7 +2,7 @@ import Camera from "../camera";
 import { Renderer } from "../render";
 import Node from "../../node";
 import Graph from "../../graph";
-import { Point2D } from "../math/point";
+import { Vector2D } from "../math/vector";
 import AABB from "../math/aabb";
 
 interface Layer {
@@ -24,7 +24,7 @@ export default class MiniMapRender extends Renderer {
   private camLayer: Layer;
   private scale:number;
   private root:HTMLElement;
-  private offset:Point2D = new Point2D();
+  private offset:Vector2D = new Vector2D();
   private graph:Graph;
 
   constructor(camera:Camera, bbox:AABB, size:number) {
@@ -51,7 +51,7 @@ export default class MiniMapRender extends Renderer {
     return this.root;
   }
 
-  onResize(size:Point2D) {    
+  onResize(size:Vector2D) {    
     this.width = size.x * this.size;
     this.height = size.y * this.size;
 
@@ -66,7 +66,7 @@ export default class MiniMapRender extends Renderer {
 
   render(delta:number, graph:Graph) {
     const ctx = this.camLayer.ctx;
-    const pos = new Point2D(this.camera.postion.x, this.camera.postion.y)
+    const pos = new Vector2D(this.camera.postion.x, this.camera.postion.y)
     .mul(this.scale)
     .add(this.offset)
     
@@ -87,7 +87,7 @@ export default class MiniMapRender extends Renderer {
   create(graph:Graph) {
     this.graph = graph;
     const scale = Math.min(this.height / this.bbox.height, this.width / this.bbox.width);
-    const center = new Point2D(this.width / 2, this.height / 2);
+    const center = new Vector2D(this.width / 2, this.height / 2);
     const offset = center.sub(this.bbox.center.mul(scale));
 
     this.scale = scale;
@@ -104,7 +104,7 @@ export default class MiniMapRender extends Renderer {
     });
   }
 
-  drawNode(node:Node, scale:number, offset:Point2D) {
+  drawNode(node:Node, scale:number, offset:Vector2D) {
     const x = node.x * scale + offset.x;
     const y = node.y * scale + offset.y;
     this.mapLayer.ctx.fillRect(x, y, 1, 1);

@@ -1,7 +1,7 @@
 import Camera from "./camera";
 import Graph from '../graph';
 import AABB from "./math/aabb";
-import { Point2D } from "./math/point";
+import { Vector2D } from "./math/vector";
 
 export function clamp(value:number, min:number, max:number) {
   if (value > max) return max;
@@ -29,7 +29,7 @@ export abstract class Renderer {
   }
 
   abstract render(delta:number, grap:Graph):void;
-  abstract onResize(size:Point2D):void;
+  abstract onResize(size:Vector2D):void;
   abstract create(graph:Graph):void;
   abstract init(width:number, height:number):void;
   abstract get domElement():HTMLElement;

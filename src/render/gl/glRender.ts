@@ -1,7 +1,7 @@
 import { Renderer } from '../render';
 import Graph from '../../graph';
 import Node from '../../node';
-import { Point2D } from '../math/point';
+import { Vector2D } from '../math/vector';
 
 function loadShader(gl:WebGLRenderingContext, type:number, source:string) {
   const shader = gl.createShader(type);
@@ -66,7 +66,7 @@ export default class WebGlRenderer extends Renderer {
     });
   }
 
-  onResize(size:Point2D) {
+  onResize(size:Vector2D) {
     this.root.width = size.x;
     this.root.height = size.y;
   }

@@ -1,7 +1,7 @@
 // import Camera from "./camera";
 import { Renderer } from "./render/render";
 import Node from "./node";
-import { Point2D } from "./render/math/point";
+import { Vector2D } from "./render/math/vector";
 
 interface IEdgeMap {
   [key:string]: Edge[];
@@ -77,7 +77,7 @@ export default class Graph {
     
     this.renderEngine = renderer;
     this.renderEngine.init(this.size.x, this.size.y);
-    this.renderEngine.onResize(new Point2D(this.width, this.height));
+    this.renderEngine.onResize(new Vector2D(this.width, this.height));
     this.root.appendChild(this.renderEngine.domElement);
 
     this.renderEngine.create(this);
@@ -87,8 +87,8 @@ export default class Graph {
     return this.renderEngine;
   }
 
-  get size():Point2D {
-    return new Point2D(this.width, this.height);
+  get size():Vector2D {
+    return new Vector2D(this.width, this.height);
   }
 
   get nodeList():Node[] {
@@ -103,7 +103,7 @@ export default class Graph {
     return this.nodeMap[id];
   }
 
-  render() {    
+  render() {
     const now = Date.now()
     const delta = now - this.time;
 
@@ -118,7 +118,7 @@ export default class Graph {
     if (this.root.clientWidth != this.width || this.root.clientHeight != this.height) {
       this.width = this.root.clientWidth;
       this.height = this.root.clientHeight;
-      this.renderEngine.onResize(new Point2D(this.width, this.height));
+      this.renderEngine.onResize(new Vector2D(this.width, this.height));
       return true;
     }
 

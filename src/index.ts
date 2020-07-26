@@ -10,7 +10,7 @@ import GraphController from './graphController';
 const graphElement = document.getElementById('graph');
 
 const camera = new Camera();
-camera.zoomLevel = .2;
+// camera.zoomLevel = .2;
 const render = new HtmlRenderer(camera);
 const graph = new Graph(graphElement);
 graph.renderer = render;

@@ -1,5 +1,5 @@
 import { clamp } from "./render";
-import { Point2D, Point3D } from "./math/point";
+import { Vector2D, Vector3D } from "./math/vector";
 import AABB from "./math/aabb";
 
 export default class Camera {
@@ -10,32 +10,34 @@ export default class Camera {
   minZoom = 0.05;
   zoomSense:number = 0.001;
   isDirty = true;
+  zooming = false;
   bbox:AABB;
-  viewportSize:Point2D = new Point2D();
+  viewportSize:Vector2D = new Vector2D();
 
   onMove:(x:number, y:number) => void;
   onZoom:(z:number) => void;
 
   move(x: number, y:number) {
-    if (this.bbox) {
-      this.x = clamp(this.x + x * (1 / this.z), this.bbox.minX, this.bbox.maxX);
-      this.y = clamp(this.y + y * (1 / this.z), this.bbox.minY, this.bbox.maxY);
-    } else {
-      this.x += x * (1 / this.z);
-      this.y += y * (1 / this.z);
-    }
+    this.x += x * (1 / this.z);
+    this.y += y * (1 / this.z);
+
+    // if (this.bbox) {
+    //   this.x = clamp(this.x, this.bbox.minX, this.bbox.maxX);
+    //   this.y = clamp(this.y, this.bbox.minY, this.bbox.maxY);
+    // }
 
     if (this.onMove) this.onMove(this.x, this.y);
 
     this.isDirty = true;
   }
 
-  zoom(value:number, center?:Point2D) {
+  zoom(value:number, center?:Vector2D) {
     this.z = clamp(this.z + value * this.zoomSense, this.minZoom, this.maxZoom);
 
     if (this.onZoom) this.onZoom(this.z);
 
     this.isDirty = true;
+    this.zooming = true;
   }
 
   get translationMtx() {
@@ -62,8 +64,16 @@ export default class Camera {
     ];
   }
 
-  get postion():Point3D {
-    return new Point3D(this.x, this.y, this.z);
+  get postion():Vector3D {
+    return new Vector3D(this.x, this.y, this.z);
+  }
+
+  set position(p: Vector3D) {
+    this.x = p.x; this.y = p.y; this.z = p.z;
+  }
+
+  setPosition(x: number, y: number) {
+    this.x = x; this.y = y;
   }
   
   get zoomLevel() {
@@ -75,6 +85,8 @@ export default class Camera {
   }
 
   update(delta:number):boolean {
+    this.zooming = false;
+
     if (this.isDirty) {
       this.isDirty = false;
       return true;

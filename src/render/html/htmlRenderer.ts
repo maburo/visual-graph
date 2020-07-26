@@ -2,14 +2,14 @@ import { Renderer } from '../render';
 import Graph from '../../graph';
 import Camera from '../camera';
 import debugConsole from '../../console';
-import { Point2D, Point3D } from '../math/point';
+import { Vector2D, Vector3D } from '../math/vector';
 import { Matrix3D } from '../math/matrix';
 
 export default class HtmlRenderer extends Renderer {
   private root:HTMLElement;
   private container:HTMLElement;
-  private viewportSize:Point2D;
-  private mousePos:Point2D = new Point2D();
+  private viewportSize:Vector2D;
+  private mousePos:Vector2D = new Vector2D();
   invertedMtx: number[] = Matrix3D.identity();
 
   constructor(camera:Camera) {
@@ -29,42 +29,68 @@ export default class HtmlRenderer extends Renderer {
   }
 
   onMouseMove(x:number, y:number) {
-    this.mousePos = new Point2D(x, y);
+    this.mousePos = new Vector2D(x, y);
   }
   
   render(delta:number, grap:Graph):void {
+    const zooming = this.camera.zooming;
     this.camera.update(delta);
-    
-    const trMtx = this.camera.translationMtx;
+    const pos = this.camera.postion
+    const screenCenter = this.camera.viewportSize.div(2);
+    const projMousePos = this.toLocalCoordinates(this.mousePos.x, this.mousePos.y);
+
+    const zoomDelta = projMousePos.sub(pos)
+    const zoomCenter = Matrix3D.translation(-zoomDelta.x, -zoomDelta.y)
+    const zoomCenterInv = Matrix3D.translation(zoomDelta.x, zoomDelta.y)
+
+    const trMtx = pos.translationMtx;
     const scaleMtx = this.camera.scaleMtx;
     const vpMtx = this.camera.viewportMtx;
-    const invVpMtx = [1, 0, vpMtx[2], 0, 1, vpMtx[5], 0, 0, 1];
 
-    const projectedMousePos = this.toLocalCoordinates(this.camera.postion.x, this.camera.postion.y);
-
-    debugConsole.log('trMtx', trMtx)
-    debugConsole.log('vp', this.camera.viewportMtx)
+    // debugConsole.log('trMtx', Matrix3D.toString(trMtx))
+    // debugConsole.log('scMtx', Matrix3D.toString(scaleMtx))
+    // debugConsole.log('inv', Matrix3D.toString(this.invertedMtx))
+    // debugConsole.log('vp', Matrix3D.toString(this.camera.viewportMtx))
     debugConsole.log('screen mouse', this.mousePos)
-    debugConsole.log('proj mouse', projectedMousePos)
+    debugConsole.log('proj mouse', projMousePos)
     debugConsole.log('zoom', this.camera.zoomLevel.toFixed(2))
    
     this.camera.update(delta);
     
     let m = Matrix3D.identity();
     
-    m = Matrix3D.mul(m, vpMtx);
-    m = Matrix3D.mul(m, scaleMtx);
-    m = Matrix3D.mul(m, trMtx);
+    Matrix3D.mul(m, vpMtx);
+    if (zooming) {
+      Matrix3D.mul(m, zoomCenterInv)
+      Matrix3D.mul(m, scaleMtx)
+      Matrix3D.mul(m, zoomCenter)
+    } else {
+      Matrix3D.mul(m, scaleMtx)
+    }
+    Matrix3D.mul(m, trMtx);
 
     this.invertedMtx = Matrix3D.invert(Matrix3D.copy(m));
-    this.container.style.transform = `matrix(${m[0]},${m[3]},${m[1]},${m[4]},${m[2]},${m[5]})`;
+
+    if (zooming) {
+      const newCamPos = this.toLocalCoordinates(screenCenter.x, screenCenter.y);
+      this.camera.setPosition(newCamPos.x, newCamPos.y)
+    }
+
+    this.container.style.transform = Matrix3D.cssMatrix(m);
   }
+  x: number = 0;
+  y: number = 0;
 
   toLocalCoordinates(x: number, y: number) {
-    return new Point3D(x, y, 1).mtxMul(this.invertedMtx);
+    try {
+      return new Vector3D(x, y, 1).mtxMul(this.invertedMtx);
+    } catch (e) {
+      console.log(this.invertedMtx)
+      throw e;
+    }
   }
 
-  onResize(size:Point2D):void {
+  onResize(size:Vector2D):void {
     this.root.style.width = size.x + 'px';
     this.root.style.height = size.y + 'px';
     this.camera.viewportSize = size;

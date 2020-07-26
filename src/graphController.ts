@@ -41,7 +41,7 @@ export default class GraphController {
     }
     this.mouseX = e.x;
     this.mouseY = e.y;
-    this.graph.renderer?.onMouseMove(e.x, e.y);
+    this.graph.renderer?.onMouseMove(e.clientX, e.clientY);
   }
 
   private onMouseUp(e:MouseEvent) {

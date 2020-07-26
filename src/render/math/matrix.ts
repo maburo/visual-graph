@@ -1,3 +1,5 @@
+const degreeToRad = Math.PI / 180;
+
 export class Matrix3D {
   static identity() {
     return [1, 0, 0, 0, 1, 0, 0, 0, 1];
@@ -7,20 +9,24 @@ export class Matrix3D {
     return [m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8]];
   }
 
-  static mul(a:Array<number>, b:Array<number>):Array<number> {
-    return [
-      a[0] * b[0] + a[1] * b[3] + a[2] * b[6],
-      a[0] * b[1] + a[1] * b[4] + a[2] * b[7],
-      a[0] * b[2] + a[1] * b[5] + a[2] * b[8],
+  static toString(m:Array<number>) { 
+    return `[${m.map(n => n.toFixed(2)).join(', ')}]`
+  }
 
-      a[3] * b[0] + a[4] * b[3] + a[5] * b[6],
-      a[3] * b[1] + a[4] * b[4] + a[5] * b[7],
-      a[3] * b[2] + a[4] * b[5] + a[5] * b[8],
+  static mul(a:Array<number>, b:Array<number>) {
+    const [a0, a1, a2, a3, a4, a5, a6, a7, a8] = a;
 
-      a[6] * b[0] + a[7] * b[3] + a[8] * b[6],
-      a[6] * b[1] + a[7] * b[4] + a[8] * b[7],
-      a[6] * b[2] + a[7] * b[5] + a[8] * b[8]
-    ];
+    a[0] = a0 * b[0] + a1 * b[3] + a2 * b[6];
+    a[1] = a0 * b[1] + a1 * b[4] + a2 * b[7];
+    a[2] = a0 * b[2] + a1 * b[5] + a2 * b[8];
+
+    a[3] = a3 * b[0] + a4 * b[3] + a5 * b[6];
+    a[4] = a3 * b[1] + a4 * b[4] + a5 * b[7];
+    a[5] = a3 * b[2] + a4 * b[5] + a5 * b[8];
+
+    a[6] = a6 * b[0] + a7 * b[3] + a8 * b[6];
+    a[7] = a6 * b[1] + a7 * b[4] + a8 * b[7];
+    a[8] = a6 * b[2] + a7 * b[5] + a8 * b[8];
   }
 
   static invTranslation(m:Array<number>) {
@@ -60,6 +66,17 @@ export class Matrix3D {
     m[7] = (-a21 * a00 + a01 * a20) * det;
     m[8] = (a11 * a00 - a01 * a10) * det;
     return m;
+  }
+
+  static rotation(degree: number) {
+    const cos = Math.cos(degree * degreeToRad);
+    const sin = Math.sin(degree * degreeToRad);
+
+    return [
+      cos, -sin, 0,
+      sin, cos, 0,
+      0, 0, 1
+    ]
   }
 
   static translation(x:number, y:number):Array<number> {

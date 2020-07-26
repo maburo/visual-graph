@@ -5,7 +5,7 @@ import MiniMapRender from './miniMapRender';
 import { QuadTree } from '../scene';
 import Node from '../../node';
 import NodeFactory from './nodeFactory';
-import { Point2D } from '../math/point';
+import { Vector2D } from '../math/vector';
 import { Matrix3D } from '../math/matrix';
 
 const svgNS = "http://www.w3.org/2000/svg";
@@ -21,10 +21,10 @@ function createSvgNode(type:string, options:any) {
 export default class SvgRender extends Renderer {
   private svg:SVGElement;
   private container:SVGElement;
-  private mousePos:Point2D = new Point2D();
+  private mousePos:Vector2D = new Vector2D();
   private root:HTMLElement;
   private nodes:any[] = [];
-  // private viewportSize:Point2D
+  // private viewportSize:Vector2D
   private qTree:QuadTree = new QuadTree(5, -5000, -5000, 5000, 5000);
   
   constructor(camera:Camera) {
@@ -52,10 +52,10 @@ export default class SvgRender extends Renderer {
   }
 
   onMouseMove(x:number, y:number) {
-    this.mousePos = new Point2D(x, y);
+    this.mousePos = new Vector2D(x, y);
   }
 
-  onResize(size:Point2D) {
+  onResize(size:Vector2D) {
     this.root.style.width = size.x + 'px';
     this.root.style.height = size.y + 'px';
     // this.viewportSize = size;
@@ -196,13 +196,13 @@ export default class SvgRender extends Renderer {
     if (this.zoomToCursor) {
 
     } else {
-      // const mm = new Point3D(this.mousePos.x, this.mousePos.y)
+      // const mm = new Vector3D(this.mousePos.x, this.mousePos.y)
       
-      m = Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
-      m = Matrix3D.mul(m, this.camera.scaleMtx);
-      m = Matrix3D.mul(m, Matrix3D.translation(-hvp.x, -hvp.y));
-      m = Matrix3D.mul(m, this.camera.translationMtx);
-      m = Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
+      Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
+      Matrix3D.mul(m, this.camera.scaleMtx);
+      Matrix3D.mul(m, Matrix3D.translation(-hvp.x, -hvp.y));
+      Matrix3D.mul(m, this.camera.translationMtx);
+      Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
 
       // this.invMtx = Matrix3D.copy(m)
     }
@@ -219,7 +219,7 @@ export default class SvgRender extends Renderer {
       // m = Matrix3D.mul(m, this.camera.translationMtx);
       // m = Matrix3D.mul(m, Matrix3D.translation(hvp.x, hvp.y));
 
-      // let msp = new Point2D(x, y)
+      // let msp = new Vector2D(x, y)
       // console.log('offset', msp);      
       // msp = msp.add(hvp.neg())
       // console.log('vp', msp);

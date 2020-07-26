@@ -1,4 +1,4 @@
-import { Point2D } from './point';
+import { Vector2D } from './vector';
 
 /**
  * Axis aligned bounding box
@@ -57,8 +57,8 @@ export default class AABB {
     return Math.abs(this.maxY - this.minY);
   }
 
-  get center():Point2D {
-    return new Point2D(this.minX + this.width / 2,
+  get center():Vector2D {
+    return new Vector2D(this.minX + this.width / 2,
                        this.minY + this.height / 2);
   }
 }
