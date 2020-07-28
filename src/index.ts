@@ -12,6 +12,7 @@ const graphElement = document.getElementById('graph');
 const camera = new Camera();
 // camera.zoomLevel = .2;
 const render = new HtmlRenderer(camera);
+render.zoomToCursor = true;
 const graph = new Graph(graphElement);
 graph.renderer = render;
 graph.render();
@@ -47,9 +48,6 @@ fetch('/big_graph.json')
 .then((response) => response.json())
 .then((json:string) => {
   graph.create(json);
-
-  console.log(camera.bbox);
-  
 });
 
 // (window as any).changeRender = (value:string) => {

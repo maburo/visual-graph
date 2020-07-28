@@ -8,6 +8,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.css', '.scss']
   },
+  optimization: {
+    minimize: false
+  },
   output: {
     path: path.join(__dirname, '/dist'),
     filename: 'bundle.min.js'

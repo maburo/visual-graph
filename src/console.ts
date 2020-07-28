@@ -22,8 +22,6 @@ root.style.padding = '5px 15px';
 root.style.pointerEvents = 'none';
 
 document.body.appendChild(root);
-console.log('init', root);
-
 
 function update() {
   Object.keys(loggers).forEach(key => {

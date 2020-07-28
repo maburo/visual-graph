@@ -1,14 +1,27 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-  <head> 
-    <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">     
-    <title>TypeScript + React</title> 
-  </head> 
-  <body> 
-    <div id="root"> 
-
-    </div>
-  <script type="text/javascript" src="bundle.min.js"></script></body>
-</html>
+Html Webpack Plugin:
+<pre>
+  TypeError: Cannot read property 'sockWrite' of null
+  
+  - index.js:135 HtmlWebpackHotPlugin.connWrite
+    [visual-graph]/[html-webpack-hot-plugin]/index.js:135:25
+  
+  - index.js:41 
+    [visual-graph]/[html-webpack-hot-plugin]/index.js:41:22
+  
+  
+  - new Promise
+  
+  
+  - Hook.js:154 AsyncSeriesWaterfallHook.lazyCompileHook
+    [visual-graph]/[tapable]/lib/Hook.js:154:20
+  
+  - index.js:673 promisedApplyPluginsAsyncWaterfall
+    [visual-graph]/[html-webpack-plugin]/index.js:673:47
+  
+  - index.js:196 
+    [visual-graph]/[html-webpack-plugin]/index.js:196:18
+  
+  - task_queues.js:93 processTicksAndRejections
+    internal/process/task_queues.js:93:5
+  
+</pre>

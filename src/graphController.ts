@@ -45,13 +45,22 @@ export default class GraphController {
   }
 
   private onMouseUp(e:MouseEvent) {
-    this.mousedown = false;
+    if (e.button === 0) {
+      this.mousedown = false;
+    }
   }
 
   private onMouseDown(e:MouseEvent) {
-    this.mousedown = true; 
-    this.mouseX = e.x;
-    this.mouseY = e.y;
+    switch (e.button) {
+      case 0:
+        this.mousedown = true; 
+        this.mouseX = e.x;
+        this.mouseY = e.y;
+        break;
+      case 1:
+        this.camera.zoom(-100)
+        break;
+    }
   }
 
   private onMouseWheel(e:MouseWheelEvent) {

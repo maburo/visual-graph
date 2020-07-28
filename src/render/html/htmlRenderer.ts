@@ -8,7 +8,6 @@ import { Matrix3D } from '../math/matrix';
 export default class HtmlRenderer extends Renderer {
   private root:HTMLElement;
   private container:HTMLElement;
-  private viewportSize:Vector2D;
   private mousePos:Vector2D = new Vector2D();
   invertedMtx: number[] = Matrix3D.identity();
 
@@ -33,50 +32,54 @@ export default class HtmlRenderer extends Renderer {
   }
   
   render(delta:number, grap:Graph):void {
-    const zooming = this.camera.zooming;
-    this.camera.update(delta);
+    const isZooming = this.camera.zooming;
+    if (!this.camera.update(delta)) return;
+    
     const pos = this.camera.postion
-    const screenCenter = this.camera.viewportSize.div(2);
-    const projMousePos = this.toLocalCoordinates(this.mousePos.x, this.mousePos.y);
-
-    const zoomDelta = projMousePos.sub(pos)
-    const zoomCenter = Matrix3D.translation(-zoomDelta.x, -zoomDelta.y)
-    const zoomCenterInv = Matrix3D.translation(zoomDelta.x, zoomDelta.y)
-
     const trMtx = pos.translationMtx;
     const scaleMtx = this.camera.scaleMtx;
-    const vpMtx = this.camera.viewportMtx;
-
-    // debugConsole.log('trMtx', Matrix3D.toString(trMtx))
-    // debugConsole.log('scMtx', Matrix3D.toString(scaleMtx))
-    // debugConsole.log('inv', Matrix3D.toString(this.invertedMtx))
-    // debugConsole.log('vp', Matrix3D.toString(this.camera.viewportMtx))
+    const screenCenter = this.camera.viewportSize.div(2);
+    const mtx = Matrix3D.translation(screenCenter.x, screenCenter.y);
+    // const mtx = Matrix3D.identity()
+    
     debugConsole.log('screen mouse', this.mousePos)
-    debugConsole.log('proj mouse', projMousePos)
     debugConsole.log('zoom', this.camera.zoomLevel.toFixed(2))
-   
-    this.camera.update(delta);
-    
-    let m = Matrix3D.identity();
-    
-    Matrix3D.mul(m, vpMtx);
-    if (zooming) {
-      Matrix3D.mul(m, zoomCenterInv)
-      Matrix3D.mul(m, scaleMtx)
-      Matrix3D.mul(m, zoomCenter)
+    debugConsole.log('cam pos', pos)
+
+    const projMousePos = this.toLocalCoordinates(this.mousePos.x, this.mousePos.y);
+    debugConsole.log('proj mouse', projMousePos)
+
+    if (this.zoomToCursor && isZooming) {
+      // const zoomDelta = projMousePos.sub(pos)
+      const zoomDelta = new Vector3D(100, 100, 1);
+      const zoomCenter = Matrix3D.translation(-zoomDelta.x, -zoomDelta.y)
+      const zoomCenterInv = Matrix3D.translation(zoomDelta.x, zoomDelta.y)
+
+      // debugConsole.log('scaleMtx', Matrix3D.toString(scaleMtx))
+      debugConsole.log('zoom shif', zoomDelta)
+      
+      Matrix3D.mul(mtx, zoomCenterInv)
+      Matrix3D.mul(mtx, scaleMtx)
+      Matrix3D.mul(mtx, zoomCenter)
     } else {
-      Matrix3D.mul(m, scaleMtx)
+      Matrix3D.mul(mtx, scaleMtx)
     }
-    Matrix3D.mul(m, trMtx);
+    
+    Matrix3D.mul(mtx, trMtx);
+    
 
-    this.invertedMtx = Matrix3D.invert(Matrix3D.copy(m));
+    this.invertedMtx = Matrix3D.invert(Matrix3D.copy(mtx));
 
-    if (zooming) {
+    if (this.zoomToCursor && isZooming) {
       const newCamPos = this.toLocalCoordinates(screenCenter.x, screenCenter.y);
       this.camera.setPosition(newCamPos.x, newCamPos.y)
+
+      debugConsole.log('screenCenter', screenCenter)
+      debugConsole.log('new cam pos', this.camera.position)
+      debugConsole.log('mtx', Matrix3D.toString(mtx))
     }
 
-    this.container.style.transform = Matrix3D.cssMatrix(m);
+    this.container.style.transform = Matrix3D.cssMatrix(mtx);
   }
   x: number = 0;
   y: number = 0;
